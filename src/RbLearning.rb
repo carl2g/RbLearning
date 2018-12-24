@@ -1,0 +1,5 @@
+require './src/Matrix'
+require './src/Gauss'
+require './src/Regressions'
+require './src/LeastS'
+require './src/Knn'

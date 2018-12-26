@@ -85,4 +85,38 @@ class Matrix
 		return newM
 	end
 
+	def to_vect
+		vect = []
+		self.matrix.each do |line|
+			line.each do |val|
+				vect += [val.dup]
+			end
+		end
+		return vect
+	end
+
+	def self.convertToMatrix(vect, size_y = Math.sqrt(vect.size), size_x = size_y)
+		newM = Matrix.new
+		newM.set((0...size_y).map do |y|
+			vect[(y * size_x)...(y * size_x + size_x)]
+		end)
+		return newM
+	end
+
+	def copy
+		newM = Matrix.new
+		newM.set(self.matrix)
+		return newM
+	end
+
+	def filter(filter, pos_y = 0, pos_x = 0, op = :* )
+		newM = self.copy
+		filter.matrix.each_with_index do |line, y|
+			line.each_with_index do |val, x|
+				newM[pos_y + y][pos_x + x] = newM[pos_y + y][pos_x + x].send(op, val) if newM[pos_y + y] && newM[pos_x + x]
+			end
+		end
+		return newM
+	end
+
 end

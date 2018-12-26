@@ -1,8 +1,4 @@
-require 'csv'
-require 'bitmap'
-
-class Knn
-
+class Cnn
 	attr_accessor :hashed_data, :size_x, :size_y
 
 	def initialize(csv_file)
@@ -19,27 +15,8 @@ class Knn
 		@size_y = @hashed_data.first.last.size
 	end
 
-	def setbmp(file)
+	def train(x_train, y_train)
 
-	end
-
-	def predict(data, m, exp_res, nb = 100)
-		res = {}
-		m.matrix.each_with_index do |line, i|
-			diff = 0
-			line.each_with_index do |val, x|
-				diff += Math.sqrt((data[x] - val.to_f)**2)
-			end
-			res[i] = { lab: exp_res[i], diff: diff }
-		end
-		res = res.sort_by {|i, res|  res[:diff] }
-		final_res = {}
-		res.first(nb).each do |ind, h|
-			final_res[h[:lab]] = 0 if final_res[h[:lab]].nil?
-			final_res[h[:lab]] += 1
-		end
-		final_res = final_res.sort_by {|key, val| val }
-		return final_res.last
 	end
 
 	def matrix(with = self.labels)

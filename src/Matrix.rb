@@ -2,10 +2,10 @@ class Matrix
 
 	attr_accessor :matrix, :size_x, :size_y
 
-	def initialize(size_y = 0, size_x = size_y)
+	def initialize(size_y = 0, size_x = size_y, val = 0)
 		@size_x = size_x
 		@size_y = size_y
-		@matrix = Array.new(@size_y) { |i| Array.new(@size_x) { |i| 0.0 }  }
+		@matrix = Array.new(@size_y) { |i| Array.new(@size_x) { |i| val }  }
 	end
 
 	def[](x)
@@ -27,6 +27,21 @@ class Matrix
 		end
 	end
 
+	def printShape
+		puts "size_y: #{self.size_y} size_x: #{self.size_x}"
+	end
+
+	def self.set(arr)
+		m = Matrix.new
+
+		m.set( arr.map do |line|
+			line.map do |val|
+				val.to_f
+			end
+		end)
+		return m
+	end
+
 	def size_x
 		@size_x
 	end
@@ -38,7 +53,7 @@ class Matrix
 	def printM(round = 1)
 		(0...@size_y).each do |y|
 			(0...@size_x).each do |x|
-				print "#{@matrix[y][x].round(round)}  "
+				print "%.#{round}f  " % @matrix[y][x]
 			end
 			puts
 		end
@@ -56,21 +71,55 @@ class Matrix
 	end
 
 	def *(matrix)
-		min_x = (self.size_x > matrix.size_x) ? matrix.size_x : self.size_x
-		min_y = (self.size_y > matrix.size_y) ? matrix.size_y : self.size_y
-		newM = Matrix.new(min_y, min_x)
-
-		(0...min_x).each do |x|
-			(0...min_y).each do |v|
-				(0...self.size_y).each do |y|
-					newM[v][x] += self[y][x] * matrix[v][y]
+		newM = Matrix.new
+		newM.set(
+			(0...self.size_y).map do |y|
+				(0...matrix.size_x).map do |l|
+					val = 0
+					(0...self.size_x).map do |x|
+						val += self[y][x] * matrix[x][l]
+					end
+					val
 				end
+			end
+		)
+		return newM
+	end
+
+	def +(matrix)
+		newM = Matrix.new(self.size_y, self.size_x)
+		m = boardcasting(matrix, self.size_y, self.size_x)
+		(0...self.size_y).each do |y|
+			(0...self.size_x).each do |x|
+				newM[y][x] = self[y][x] + m[y][x]
 			end
 		end
 		return newM
 	end
 
-	def +(matrix)
+	def **(matrix)
+		newM = Matrix.new(self.size_y, self.size_x)
+		m = boardcasting(matrix, self.size_y, self.size_x)
+		(0...self.size_y).each do |y|
+			(0...self.size_x).each do |x|
+				newM[y][x] = self[y][x] * m[y][x]
+			end
+		end
+		return newM
+	end
+
+	def -(matrix)
+		newM = Matrix.new(self.size_y, self.size_x)
+		m = boardcasting(matrix, self.size_y, self.size_x)
+		(0...self.size_y).each do |y|
+			(0...self.size_x).each do |x|
+				newM[y][x] = self[y][x] - m[y][x]
+			end
+		end
+		return newM
+	end
+
+	def <<(matrix)
 		newM = Matrix.new(self.size_y, self.size_x + matrix.size_x)
 		(0...self.size_y).each do |y|
 			(0...self.size_x).each do |x|
@@ -86,13 +135,7 @@ class Matrix
 	end
 
 	def to_vect
-		vect = []
-		self.matrix.each do |line|
-			line.each do |val|
-				vect += [val.dup]
-			end
-		end
-		return vect
+		self.matrix.flatten
 	end
 
 	def self.convertToMatrix(vect, size_y = Math.sqrt(vect.size), size_x = size_y)
@@ -113,10 +156,99 @@ class Matrix
 		newM = self.copy
 		filter.matrix.each_with_index do |line, y|
 			line.each_with_index do |val, x|
-				newM[pos_y + y][pos_x + x] = newM[pos_y + y][pos_x + x].send(op, val) if newM[pos_y + y] && newM[pos_x + x]
+				newM[pos_y + y][pos_x + x] = newM[pos_y + y][pos_x + x].send(op, val) if newM[pos_y + y] && newM[pos_y + y][pos_x + x]
 			end
 		end
 		return newM
+	end
+
+	def self.filterAll(m, filter, op = :*)
+		filtered_m = Matrix.new(m.size_y, m.size_x)
+		(0...m.size_y).each do |y|
+			(0...m.size_x).each do |x|
+				tmp = m.filter(filter, y, x, op)
+				sum = tmp.sum(y, x, filter.size_y, filter.size_x)
+				filtered_m[y][x] = sum
+			end
+		end
+		return filtered_m
+	end
+
+	def applyOp(op, nb)
+		self.matrix.each_with_index do |line, y|
+			line.each_with_index do |val, x|
+				self[y][x] = val.send(op, nb)
+			end
+		end
+		return self
+	end
+
+	def set_if(set = 0, nb = 0, op = :<)
+		self.matrix.each_with_index do |line, y|
+			line.each_with_index do |val, x|
+				self[y][x] = set if val.send(op, nb)
+			end
+		end
+	end
+
+	def sum(beg_y = 0, beg_x = 0, size_y = self.size_y, size_x = self.size_x)
+		sum = 0
+		(beg_y...(beg_y + size_y)).each do |y|
+			(beg_x...(beg_x + size_x)).each do |x|
+				sum += self[y][x] if self[y] && self[y][x]
+			end
+		end
+		return sum.to_f
+	end
+
+	def split(size_y, size_x, step_y = size_y, step_x = size_x)
+		arr = []
+		(0...self.size_y).step(step_y) do |y|
+			(0...self.size_x).step(step_x) do |x|
+				arr += [self.getMat(y, x, size_y, size_x)]
+			end
+		end
+		return arr
+	end
+
+	def getMat(beg_y, beg_x, size_y, size_x)
+		newM = Matrix.new(size_y, size_x)
+		(0...size_y).each do |y|
+			(0...size_x).each do |x|
+				newM[y][x] = self[beg_y + y][beg_x + x] if self[beg_y + y] && self[beg_y + y][beg_x + x]
+			end
+		end
+		return newM
+	end
+
+	def getMax(beg_y = 0, beg_x = 0, size_y = self.size_y, size_x = self.size_x)
+		max = self[0][0]
+		(beg_y...beg_y + size_y).each do |y|
+			(beg_x..beg_x + size_x).each do |x|
+				max = self[y][x] if self[y] && self[y][x] && self[y][x] > max
+			end
+		end
+		return max
+	end
+
+	def normalize(norm)
+		self.matrix.each_with_index do |line, y|
+			line.each_with_index do |val, x|
+				self[y][x] = val / norm
+			end
+		end
+	end
+
+private
+
+	def boardcasting(matrix, size_y, size_x)
+		Matrix.set(
+		      (0...size_y).map do |y|
+		      	(0...size_x).map do |x|
+		      		matrix[y % matrix.size_y][x % matrix.size_x]
+		      	end
+		      end
+		)
 	end
 
 end

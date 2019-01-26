@@ -19,10 +19,6 @@ class Knn
 		@size_y = @hashed_data.first.last.size
 	end
 
-	def setbmp(file)
-
-	end
-
 	def predict(data, m, exp_res, nb = 100)
 		res = {}
 		m.matrix.each_with_index do |line, i|

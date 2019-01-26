@@ -19,9 +19,9 @@ def triangleEquationSolver(mat, vect_size = mat.size_x - 1)
 end
 
 def poylnomialRegression(mat, res)
-	squared_res = res * mat.transpose
-	newM = mat * mat.transpose
-	newM = newM + squared_res
+	squared_res = mat.transpose  * res
+	newM = mat.transpose * mat
+	newM = newM << squared_res
 	gauss = GaussElemination(newM)
 	return triangleEquationSolver(gauss)
 end

@@ -61,62 +61,124 @@ class Matrix
 	end
 
 	def transpose
-		transposeM = Matrix.new(self.size_x, self.size_y)
-		(0...transposeM.size_y).each do |y|
-			(0...transposeM.size_x).each do |x|
-				transposeM[y][x] = self[x][y]
-			end
-		end
-		return transposeM
+		# transposeM = Matrix.new(self.size_x, self.size_y)
+		# (0...transposeM.size_y).each do |y|
+		# 	(0...transposeM.size_x).each do |x|
+		# 		transposeM[y][x] = self[x][y]
+		# 	end
+		# end
+		# return transposeM
+		vec = self.to_vect
+		ptr = FFI::MemoryPointer.new(:float, vec.size)
+		ptr.write_array_of_float(vec)
+		res = MatrixLib.transpose(ptr, self.size_y, self.size_x)
+		vect = res.read_array_of_float(self.size_y * self.size_x)
+		Matrix.convertToMatrix(vect, self.size_x, self.size_y)
 	end
 
 	def *(matrix)
-		newM = Matrix.new
-		newM.set(
-			(0...self.size_y).map do |y|
-				(0...matrix.size_x).map do |l|
-					val = 0
-					(0...self.size_x).map do |x|
-						val += self[y][x] * matrix[x][l]
-					end
-					val
-				end
-			end
-		)
-		return newM
+		# newM = Matrix.new
+		# newM.set(
+		# 	(0...self.size_y).map do |y|
+		# 		(0...matrix.size_x).map do |l|
+		# 			val = 0
+		# 			(0...self.size_x).map do |x|
+		# 				# puts "#{self[y][x]} * #{matrix[x][l]}"
+		# 				val += self[y][x] * matrix[x][l]
+		# 			end
+		# 			# puts val
+		# 			# puts
+		# 			val
+		# 		end
+		# 	end
+		# )
+		# # return newM
+
+		# newM.printM
+
+		# puts "=" * 100
+
+		vec1 = self.to_vect
+		ptr1 = FFI::MemoryPointer.new(:float, vec1.size)
+		ptr1.write_array_of_float(vec1)
+
+		vec2 = matrix.to_vect
+		ptr2 = FFI::MemoryPointer.new(:float, vec2.size)
+		ptr2.write_array_of_float(vec2)
+
+		res = MatrixLib.dot(ptr1, ptr2, self.size_y, matrix.size_x, self.size_x)
+		vect = res.read_array_of_float(self.size_y * matrix.size_x)
+		Matrix.convertToMatrix(vect, self.size_y, matrix.size_x)
 	end
 
 	def +(matrix)
-		newM = Matrix.new(self.size_y, self.size_x)
+
+		# newM = Matrix.new(self.size_y, self.size_x)
 		m = boardcasting(matrix, self.size_y, self.size_x)
-		(0...self.size_y).each do |y|
-			(0...self.size_x).each do |x|
-				newM[y][x] = self[y][x] + m[y][x]
-			end
-		end
-		return newM
+		# (0...self.size_y).each do |y|
+		# 	(0...self.size_x).each do |x|
+		# 		newM[y][x] = self[y][x] + m[y][x]
+		# 		puts newM[y][x]
+		# 	end
+		# end
+		# return newM
+
+		vec1 = self.to_vect
+		ptr1 = FFI::MemoryPointer.new(:float, vec1.size)
+		ptr1.write_array_of_float(vec1)
+
+		vec2 = m.to_vect
+		ptr2 = FFI::MemoryPointer.new(:float, vec2.size)
+		ptr2.write_array_of_float(vec2)
+
+		res = MatrixLib.add(ptr1, ptr2, self.size_y, self.size_x)
+		vect = res.read_array_of_float(self.size_y * self.size_x)
+		Matrix.convertToMatrix(vect, self.size_y, self.size_x)
 	end
 
 	def **(matrix)
-		newM = Matrix.new(self.size_y, self.size_x)
+		# newM = Matrix.new(self.size_y, self.size_x)
 		m = boardcasting(matrix, self.size_y, self.size_x)
-		(0...self.size_y).each do |y|
-			(0...self.size_x).each do |x|
-				newM[y][x] = self[y][x] * m[y][x]
-			end
-		end
-		return newM
+		# (0...self.size_y).each do |y|
+		# 	(0...self.size_x).each do |x|
+		# 		newM[y][x] = self[y][x] * m[y][x]
+		# 	end
+		# end
+		# return newM
+
+		vec1 = self.to_vect
+		ptr1 = FFI::MemoryPointer.new(:float, vec1.size)
+		ptr1.write_array_of_float(vec1)
+
+		vec2 = m.to_vect
+		ptr2 = FFI::MemoryPointer.new(:float, vec2.size)
+		ptr2.write_array_of_float(vec2)
+
+		res = MatrixLib.mult(ptr1, ptr2, self.size_y, self.size_x)
+		vect = res.read_array_of_float(self.size_y * self.size_x)
+		Matrix.convertToMatrix(vect, self.size_y, self.size_x)
 	end
 
 	def -(matrix)
-		newM = Matrix.new(self.size_y, self.size_x)
+		# newM = Matrix.new(self.size_y, self.size_x)
 		m = boardcasting(matrix, self.size_y, self.size_x)
-		(0...self.size_y).each do |y|
-			(0...self.size_x).each do |x|
-				newM[y][x] = self[y][x] - m[y][x]
-			end
-		end
-		return newM
+		# (0...self.size_y).each do |y|
+		# 	(0...self.size_x).each do |x|
+		# 		newM[y][x] = self[y][x] - m[y][x]
+		# 	end
+		# end
+		# return newM
+		vec1 = self.to_vect
+		ptr1 = FFI::MemoryPointer.new(:float, vec1.size)
+		ptr1.write_array_of_float(vec1)
+
+		vec2 = m.to_vect
+		ptr2 = FFI::MemoryPointer.new(:float, vec2.size)
+		ptr2.write_array_of_float(vec2)
+
+		res = MatrixLib.subtract(ptr1, ptr2, self.size_y, self.size_x)
+		vect = res.read_array_of_float(self.size_y * self.size_x)
+		Matrix.convertToMatrix(vect, self.size_y, self.size_x)
 	end
 
 	def <<(matrix)
@@ -139,17 +201,13 @@ class Matrix
 	end
 
 	def self.convertToMatrix(vect, size_y = Math.sqrt(vect.size), size_x = size_y)
-		newM = Matrix.new
-		newM.set((0...size_y).map do |y|
+		Matrix.set((0...size_y).map do |y|
 			vect[(y * size_x)...(y * size_x + size_x)]
 		end)
-		return newM
 	end
 
 	def copy
-		newM = Matrix.new
-		newM.set(self.matrix)
-		return newM
+		Matrix.set(self.matrix)
 	end
 
 	def filter(filter, pos_y = 0, pos_x = 0, op = :* )
@@ -199,6 +257,17 @@ class Matrix
 			end
 		end
 		return sum.to_f
+	end
+
+	def sumAxis
+		Matrix.set(
+		      self.matrix.map do |line|
+		      	res = 0
+		      	line.map do |val|
+		      		res += val
+		      	end
+		      end
+		)
 	end
 
 	def split(size_y, size_x, step_y = size_y, step_x = size_x)

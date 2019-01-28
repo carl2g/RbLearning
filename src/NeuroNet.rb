@@ -26,18 +26,18 @@ class NeuroNet
 		puts "Error: #{err(act.last, y)}"
 
 		i = ws.size - 1
-		dw = costFunc(act.last, y) * send(lossFunc, zs[0]).transpose
-		# ws[i] -= act[i + 1].transpose * dw.applyOp(:*, lrn)
+		dz = costFunc(act.last, y)
+		dw = [ws[i] - act[i].transpose * dz.applyOp(:*, lrn)]
+		db = [bs[i] - dz.sumAxis]
 
-		ws[0] -= act[0].transpose * dw.applyOp(:*, lrn)
+		(0...ws.size - 1).reverse_each do |i|
+			tmp = dz * ws[i + 1].transpose
+			dz = tmp ** send(lossFunc, act[i + 1])
+			dw += [ws[i] - act[i].transpose * dz.applyOp(:*, lrn)]
+			db += [bs[i] - dz.sumAxis]
+		end
 
-		# (0...ws.size - 1).reverse_each do |i|
-		# 	dz = dw * ws[i + 1].transpose
-		# 	dw = dz.transpose * send(lossFunc, act[i])
-		# 	ws[i] -= act[i].transpose * dw.applyOp(:*, lrn)
-		# end
-
-		return [ws, bs]
+		return [dw.reverse, bs]
 	end
 
 	def train(ws, bs, x, y, actFunc = 'sigmoid')

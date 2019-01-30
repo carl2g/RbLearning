@@ -1,35 +1,67 @@
 module ActivFunc
 
 	def reLu(m)
-		Matrix.set(
-		      m.matrix.map do |vect|
-				vect.map { |x| x > 0 ? x : 0 }
-			end
+		Matrix.setVectorizedMatrix(
+		      m.matrix.map do |x|
+		      	x > 0 ? x : 0
+			end,
+			m.size_y,
+			m.size_x
 		)
 	end
 
+	def reLuPrime(m)
+		Matrix.setVectorizedMatrix(
+		      m.matrix.map do |x|
+		      	x > 0 ? 1 : 0.0
+			end,
+			m.size_y,
+			m.size_x
+		)
+	end
+
+	def sigmoidUnit(x)
+		1.0 / (1.0 + Math.exp(-x))
+	end
+
 	def sigmoid(m)
-		Matrix.set(
-		      m.matrix.map do |vect|
-				vect.map { |x| 1.0 / (1.0 + Math.exp(-x)) }
-			end
+		Matrix.setVectorizedMatrix(
+		      m.matrix.map do |x|
+				sigmoidUnit(x)
+			end,
+			m.size_y,
+			m.size_x
 		)
 	end
 
 	def sigmoidPrime(m)
-		Matrix.set(
-		      m.matrix.map do |vect|
-		      	vect.map { |x| x * (1 - x) }
-			end
+		Matrix.setVectorizedMatrix(
+		      m.matrix.map do |x|
+		      	Math.exp(-x) / (1.0 + Math.exp(-x))**2
+			end,
+			m.size_y,
+			m.size_x
 		)
 	end
 
-	def tanh(vect)
-		vect.map { |x| 2.0 / (1.0 + Math.exp(-2 * x)) - 1 }
+	def tanh(m)
+		Matrix.setVectorizedMatrix(
+		      m.matrix.map do |x|
+				(Math.exp(x) - Math.exp(-x)) / (Math.exp(x) + Math.exp(-x))
+			end,
+			m.size_y,
+			m.size_x
+		)
 	end
 
-	def dtanh(vect)
-		vect.map { |x| 1 - Math.tanh(x)**2 }
+	def tanhPrime(m)
+		Matrix.setVectorizedMatrix(
+		      m.matrix.map do |x|
+				1.0 - Math.tanh(x)**2
+			end,
+			m.size_y,
+			m.size_x
+		)
 	end
 
 	def softMax(vect)

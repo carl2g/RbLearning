@@ -27,7 +27,7 @@ class NeuroNet
 
 		i = ws.size - 1
 		dz = costFunc(act.last, y)
-		dw = [ws[i] - act[i].transpose * dz.applyOp(:*, lrn)]
+		dw = [ws[i] - act[i].transpose * dz.applyOp(:*, lrn) ** send(lossFunc, act[i + 1])]
 		db = [bs[i] - dz.sumAxis]
 
 		(0...ws.size - 1).reverse_each do |i|
@@ -37,14 +37,12 @@ class NeuroNet
 			db += [bs[i] - dz.sumAxis]
 		end
 
-		return [dw.reverse, bs]
+		return [dw.reverse, db.reverse]
 	end
 
-	def train(ws, bs, x, y, actFunc = 'sigmoid')
+	def train(ws, bs, x, y, lrn = 0.05, actFunc = 'sigmoid', actFuncPrime = actFunc + "Prime")
 		zs, act = feedForward(ws, x, bs, actFunc)
-		ws, bs = backPropagation(zs, act, y, ws, bs)
-		# act.last.printM(3)
-		# y.printM(3)
+		ws, bs = backPropagation(zs, act, y, ws, bs, lrn, actFuncPrime)
 		return [ws, bs]
 	end
 
@@ -53,7 +51,7 @@ class NeuroNet
 		w = Matrix.new(size_y, size_x)
 		(0...size_y).each do |y|
 			(0...size_x).each do |x|
-				w[y][x] = r.rand(min...max)
+				w[y, x] = r.rand(min...max)
 			end
 		end
 		return w

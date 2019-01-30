@@ -5,22 +5,27 @@ class Matrix
 	def initialize(size_y = 0, size_x = size_y, val = 0)
 		@size_x = size_x
 		@size_y = size_y
-		@matrix = Array.new(@size_y) { |i| Array.new(@size_x) { |i| val }  }
+		@matrix = Array.new(@size_y *  @size_x) { |i| val }
 	end
 
-	def[](x)
-		@matrix[x]
+	def get2DArr
+		Array.new(@size_y) { |y| Array.new(@size_x) { |x| @matrix[y * @size_x + x] } }
 	end
 
-	def []=(x, val)
-		@matrix[x] = val
+	def[](y, x = nil)
+		if x.nil?
+			getLines(y)
+		else
+			@matrix[y * @size_x + x]
+		end
+	end
+
+	def []=(y, x, val)
+		@matrix[y * @size_x + x] = val
 	end
 
 	def set(arr)
-		@size_x = arr.first.size
-		@size_y = arr.size
-
-		@matrix = arr.map do |line|
+		@matrix = arr.flat_map do |line|
 			line.map do |val|
 				val.to_f
 			end
@@ -32,14 +37,9 @@ class Matrix
 	end
 
 	def self.set(arr)
-		m = Matrix.new
-
-		m.set( arr.map do |line|
-			line.map do |val|
-				val.to_f
-			end
-		end)
-		return m
+		size_y = arr.size
+		size_x = arr.first.size
+		Matrix.setVectorizedMatrix(arr.flatten, size_y, size_x)
 	end
 
 	def size_x
@@ -53,7 +53,7 @@ class Matrix
 	def printM(round = 1)
 		(0...@size_y).each do |y|
 			(0...@size_x).each do |x|
-				print "%.#{round}f  " % @matrix[y][x]
+				print "%.#{round}f  " % self[y, x]
 			end
 			puts
 		end
@@ -61,153 +61,102 @@ class Matrix
 	end
 
 	def transpose
-		# transposeM = Matrix.new(self.size_x, self.size_y)
-		# (0...transposeM.size_y).each do |y|
-		# 	(0...transposeM.size_x).each do |x|
-		# 		transposeM[y][x] = self[x][y]
-		# 	end
-		# end
-		# return transposeM
 		vec = self.to_vect
 		ptr = FFI::MemoryPointer.new(:float, vec.size)
 		ptr.write_array_of_float(vec)
 		res = MatrixLib.transpose(ptr, self.size_y, self.size_x)
 		vect = res.read_array_of_float(self.size_y * self.size_x)
-		Matrix.convertToMatrix(vect, self.size_x, self.size_y)
+		m = Matrix.setVectorizedMatrix(vect, self.size_x, self.size_y)
+		LibC.free(res)
+		return m
 	end
 
 	def *(matrix)
-		# newM = Matrix.new
-		# newM.set(
-		# 	(0...self.size_y).map do |y|
-		# 		(0...matrix.size_x).map do |l|
-		# 			val = 0
-		# 			(0...self.size_x).map do |x|
-		# 				# puts "#{self[y][x]} * #{matrix[x][l]}"
-		# 				val += self[y][x] * matrix[x][l]
-		# 			end
-		# 			# puts val
-		# 			# puts
-		# 			val
-		# 		end
-		# 	end
-		# )
-		# # return newM
-
-		# newM.printM
-
-		# puts "=" * 100
-
 		vec1 = self.to_vect
 		ptr1 = FFI::MemoryPointer.new(:float, vec1.size)
 		ptr1.write_array_of_float(vec1)
-
 		vec2 = matrix.to_vect
 		ptr2 = FFI::MemoryPointer.new(:float, vec2.size)
 		ptr2.write_array_of_float(vec2)
-
 		res = MatrixLib.dot(ptr1, ptr2, self.size_y, matrix.size_x, self.size_x)
 		vect = res.read_array_of_float(self.size_y * matrix.size_x)
-		Matrix.convertToMatrix(vect, self.size_y, matrix.size_x)
+		m = Matrix.setVectorizedMatrix(vect, self.size_y, matrix.size_x)
+		LibC.free(res)
+		return m
 	end
 
 	def +(matrix)
-
-		# newM = Matrix.new(self.size_y, self.size_x)
 		m = boardcasting(matrix, self.size_y, self.size_x)
-		# (0...self.size_y).each do |y|
-		# 	(0...self.size_x).each do |x|
-		# 		newM[y][x] = self[y][x] + m[y][x]
-		# 		puts newM[y][x]
-		# 	end
-		# end
-		# return newM
-
 		vec1 = self.to_vect
 		ptr1 = FFI::MemoryPointer.new(:float, vec1.size)
 		ptr1.write_array_of_float(vec1)
-
 		vec2 = m.to_vect
 		ptr2 = FFI::MemoryPointer.new(:float, vec2.size)
 		ptr2.write_array_of_float(vec2)
-
 		res = MatrixLib.add(ptr1, ptr2, self.size_y, self.size_x)
 		vect = res.read_array_of_float(self.size_y * self.size_x)
-		Matrix.convertToMatrix(vect, self.size_y, self.size_x)
+		m = Matrix.setVectorizedMatrix(vect, self.size_y, self.size_x)
+		LibC.free(res)
+		return m
 	end
 
 	def **(matrix)
-		# newM = Matrix.new(self.size_y, self.size_x)
 		m = boardcasting(matrix, self.size_y, self.size_x)
-		# (0...self.size_y).each do |y|
-		# 	(0...self.size_x).each do |x|
-		# 		newM[y][x] = self[y][x] * m[y][x]
-		# 	end
-		# end
-		# return newM
-
 		vec1 = self.to_vect
 		ptr1 = FFI::MemoryPointer.new(:float, vec1.size)
 		ptr1.write_array_of_float(vec1)
-
 		vec2 = m.to_vect
 		ptr2 = FFI::MemoryPointer.new(:float, vec2.size)
 		ptr2.write_array_of_float(vec2)
-
 		res = MatrixLib.mult(ptr1, ptr2, self.size_y, self.size_x)
 		vect = res.read_array_of_float(self.size_y * self.size_x)
-		Matrix.convertToMatrix(vect, self.size_y, self.size_x)
+		m = Matrix.setVectorizedMatrix(vect, self.size_y, self.size_x)
+		LibC.free(res)
+		return m
 	end
 
 	def -(matrix)
-		# newM = Matrix.new(self.size_y, self.size_x)
 		m = boardcasting(matrix, self.size_y, self.size_x)
-		# (0...self.size_y).each do |y|
-		# 	(0...self.size_x).each do |x|
-		# 		newM[y][x] = self[y][x] - m[y][x]
-		# 	end
-		# end
-		# return newM
 		vec1 = self.to_vect
 		ptr1 = FFI::MemoryPointer.new(:float, vec1.size)
 		ptr1.write_array_of_float(vec1)
-
 		vec2 = m.to_vect
 		ptr2 = FFI::MemoryPointer.new(:float, vec2.size)
 		ptr2.write_array_of_float(vec2)
-
 		res = MatrixLib.subtract(ptr1, ptr2, self.size_y, self.size_x)
 		vect = res.read_array_of_float(self.size_y * self.size_x)
-		Matrix.convertToMatrix(vect, self.size_y, self.size_x)
+		m = Matrix.setVectorizedMatrix(vect, self.size_y, self.size_x)
+		LibC.free(res)
+		return m
 	end
 
 	def <<(matrix)
 		newM = Matrix.new(self.size_y, self.size_x + matrix.size_x)
 		(0...self.size_y).each do |y|
 			(0...self.size_x).each do |x|
-				newM[y][x] = self[y][x]
+				newM[y, x] = self[y, x]
 			end
 		end
 		(0...matrix.size_y).each do |y|
 			(0...matrix.size_x).each do |x|
-				newM[y][self.size_x + x] = matrix[y][x]
+				newM[y, self.size_x + x] = matrix[y, x]
 			end
 		end
 		return newM
 	end
 
 	def to_vect
-		self.matrix.flatten
+		self.matrix
 	end
 
-	def self.convertToMatrix(vect, size_y = Math.sqrt(vect.size), size_x = size_y)
-		Matrix.set((0...size_y).map do |y|
-			vect[(y * size_x)...(y * size_x + size_x)]
-		end)
+	def self.setVectorizedMatrix(vect, size_y, size_x)
+		m = Matrix.new(size_y, size_x)
+		m.matrix = vect.map { |val| val.to_f }
+		return m
 	end
 
 	def copy
-		Matrix.set(self.matrix)
+		Matrix.setVectorizedMatrix(self.to_vect)
 	end
 
 	def filter(filter, pos_y = 0, pos_x = 0, op = :* )
@@ -226,26 +175,22 @@ class Matrix
 			(0...m.size_x).each do |x|
 				tmp = m.filter(filter, y, x, op)
 				sum = tmp.sum(y, x, filter.size_y, filter.size_x)
-				filtered_m[y][x] = sum
+				filtered_m[y, x] = sum
 			end
 		end
 		return filtered_m
 	end
 
 	def applyOp(op, nb)
-		self.matrix.each_with_index do |line, y|
-			line.each_with_index do |val, x|
-				self[y][x] = val.send(op, nb)
-			end
+		self.matrix.each_with_index do |val, i|
+			@matrix[i] = val.send(op, nb)
 		end
 		return self
 	end
 
 	def set_if(set = 0, nb = 0, op = :<)
-		self.matrix.each_with_index do |line, y|
-			line.each_with_index do |val, x|
-				self[y][x] = set if val.send(op, nb)
-			end
+		self.matrix.each_with_index do |val, i|
+			self[i] = set if val.send(op, nb)
 		end
 	end
 
@@ -253,7 +198,7 @@ class Matrix
 		sum = 0
 		(beg_y...(beg_y + size_y)).each do |y|
 			(beg_x...(beg_x + size_x)).each do |x|
-				sum += self[y][x] if self[y] && self[y][x]
+				sum += self[y, x] if self[y] && self[y, x]
 			end
 		end
 		return sum.to_f
@@ -261,11 +206,24 @@ class Matrix
 
 	def sumAxis
 		Matrix.set(
-		      self.matrix.map do |line|
-		      	res = 0
-		      	line.map do |val|
-		      		res += val
-		      	end
+		      (0...self.size_y).map do |y|
+		      	tmp = 0
+		           	(0...self.size_x).each do |x|
+		         		tmp += self[y, x]
+		           	end
+		           	[tmp]
+		      end
+		)
+	end
+
+	def sumOrd
+		Matrix.set(
+		      (0...self.size_x).map do |x|
+		      	tmp = 0
+		      	(0...self.size_y).each do |y|
+		         		tmp += self[y, x]
+		           	end
+		           	[tmp]
 		      end
 		)
 	end
@@ -284,7 +242,7 @@ class Matrix
 		newM = Matrix.new(size_y, size_x)
 		(0...size_y).each do |y|
 			(0...size_x).each do |x|
-				newM[y][x] = self[beg_y + y][beg_x + x] if self[beg_y + y] && self[beg_y + y][beg_x + x]
+				newM[y, x] = self[beg_y + y][beg_x + x] if self[beg_y + y] && self[beg_y + y][beg_x + x]
 			end
 		end
 		return newM
@@ -294,17 +252,15 @@ class Matrix
 		max = self[0][0]
 		(beg_y...beg_y + size_y).each do |y|
 			(beg_x..beg_x + size_x).each do |x|
-				max = self[y][x] if self[y] && self[y][x] && self[y][x] > max
+				max = self[y, x] if self[y] && self[y, x] && self[y, x] > max
 			end
 		end
 		return max
 	end
 
 	def normalize(norm)
-		self.matrix.each_with_index do |line, y|
-			line.each_with_index do |val, x|
-				self[y][x] = val / norm
-			end
+		self.matrix.each_with_index do |val, i|
+			@matrix[i] = val / norm
 		end
 	end
 
@@ -314,10 +270,14 @@ private
 		Matrix.set(
 		      (0...size_y).map do |y|
 		      	(0...size_x).map do |x|
-		      		matrix[y % matrix.size_y][x % matrix.size_x]
+		      		matrix[y % matrix.size_y, x % matrix.size_x]
 		      	end
 		      end
 		)
+	end
+
+	def getLines(y)
+		@matrix[(y.first * size_x)...(y.last * size_x)]
 	end
 
 end

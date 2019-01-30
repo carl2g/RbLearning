@@ -25,19 +25,10 @@ class Cnn
 		(0...size_y).each do |y|
 			(0...size_x).each do |x|
 				r = Random.new
-				mat[y][x] = r.rand(min..max)
+				mat[y, x] = r.rand(min..max)
 			end
 		end
 		return mat
-	end
-
-	def initWeights(size, min = -1.0, max = 1.0)
-		w = []
-		(0...size).each do |i|
-			r = Random.new
-			w += [r.rand(min...max).round(3)]
-		end
-		return w
 	end
 
 	def initFilter(size_y, size_x, nb)
@@ -58,11 +49,6 @@ class Cnn
 			end
 		)
 		return mat
-	end
-
-	def reLu(conv_matrix)
-		conv_matrix.set_if(0, 0, :<)
-		return conv_matrix
 	end
 
 	def normalize(mat, norm)
@@ -92,7 +78,7 @@ class Cnn
 			(0...orig.size_x).each do |v|
 				(l...l + step).each do |y|
 					(v...v + step).each do |x|
-						m[y][x] = orig.getMax(l, v, filter.size_y, filter.size_x) if m[y] && m[y][x]
+						m[y, x] = orig.getMax(l, v, filter.size_y, filter.size_x) if m[y] && m[y, x]
 					end
 				end
 			end
@@ -105,30 +91,12 @@ class Cnn
 		(0..(image.size_y - mat.size_y)).each do |y|
 			(0..(image.size_x - mat.size_x)).each do |x|
 				tmp = image.filter(mat, y, x, :-)
-				(0...tmp.size_y).each { |y| (0...tmp.size_x).each { |x| tmp[y][x] = tmp[y][x].abs } }
+				(0...tmp.size_y).each { |y| (0...tmp.size_x).each { |x| tmp[y, x] = tmp[y, x].abs } }
 				sum = tmp.sum(y, x, mat.size_y, mat.size_x)
 				min = sum if min > sum || min < 0
 			end
 		end
 		return min
-	end
-
-	def lossFunc(pred, res)
-		err = 0
-		(0...pred.size).each {|i| err += res[i] * Math.log(pred[i]) }
-		return -err
-	end
-
-	def getErrMat(x_train, data_x)
-		m = Matrix.new
-		m.set(
-		      data_x.matrix.each_with_index.map do |vect, ind|
-				(0...vect.size).map do |i|
-					(x_train[i] - vect[i]).abs
-				end
-			end
-		)
-		return m
 	end
 
 	def matrixGen(with = self.labels)
@@ -139,7 +107,7 @@ class Cnn
 		(0...size_y).each do |x|
 			newH.each_with_index do |h, y|
 				key, val = h
-				arr[x][y] = val[x].to_f
+				arr[x, y] = val[x].to_f
 			end
 		end
 		@matrix = arr

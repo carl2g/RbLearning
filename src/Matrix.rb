@@ -277,7 +277,11 @@ private
 	end
 
 	def getLines(y)
-		@matrix[(y.first * size_x)...(y.last * size_x)]
+		if y.is_a? Range
+			@matrix[(y.first * @size_x)...(y.last * @size_x)]
+		else
+			@matrix[(y * @size_x)...(y * @size_x + @size_x)]
+		end
 	end
 
 end

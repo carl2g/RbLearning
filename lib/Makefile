@@ -1,10 +1,11 @@
 CC 	= 	gcc
 
-NAME 	=	matrix_lib.so
+NAME 	=	c_lib.so
 
-SRCS 	= 	src/matrix_lib.c
+SRCS 	= 	src/matrix_lib.c 	\
+		src/libmath.c
 
-FLAGS = 	-O3 -shared -fpic -o
+FLAGS = 	-Ofast -shared -fpic -lm -o
 
 OBJS 	= 	$(SRCS:.c=.o)
 

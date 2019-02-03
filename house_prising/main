@@ -1,0 +1,67 @@
+#!/usr/bin/ruby
+
+require './src/RbLearning'
+require 'csv'
+
+leastS = LeastS.new("./train.csv")
+train = LeastS.new("./test.csv")
+train.remove('Id')
+leastS.remove('Id')
+tmp = leastS.remove('SalePrice')
+
+# leastS.labels.each do |l|
+# 	cor = leastS.corelation(tmp, leastS[l]).round(3)
+# 	leastS.remove(l) if cor.abs == 0.025
+# end
+
+# train.labels.each do |l|
+# 	cor = train.corelation(tmp, train[l]).round(3)
+# 	train.remove(l) if cor.abs < 0.025
+# end
+
+leastS.labels.map do |l|
+	if leastS.skewness(leastS[l]) > 1
+		leastS[l] = leastS[l].map {|val| val.to_f > 0 ? Math.log(val.to_f) : 0 }
+		train[l] = train[l].map {|val| val.to_f > 0 ? Math.log(val.to_f) : 0 } if train[l]
+	end
+end
+
+train.labels.map do |l|
+	if train.skewness(train[l]) > 1
+		train[l] = train[l].map {|val| val.to_f > 0 ? Math.log(val.to_f) : 0 }
+		leastS[l] = leastS[l].map {|val| val.to_f > 0 ? Math.log(val.to_f) : 0 } if leastS[l]
+	end
+end
+
+leastS.addDumies
+train.addDumies
+
+leastS.labels.each do |l|
+	leastS.remove(l) if leastS[l].select { |val| val if val != 0 }.count < 500
+end
+
+train.labels.each do |l|
+	train.remove(l) if train[l].select { |val| val if val != 0 }.count < 500
+end
+
+mat = leastS.matrix(train.labels)
+pred = train.matrix(leastS.labels)
+
+res = Matrix.new
+res.set(tmp.map { |v| [Math.log(v.to_f)] })
+coefs = poylnomialRegression(mat, res)
+
+puts "error: #{leastSquaredError(mat, coefs, res)}"
+puts leastS.std_dev(tmp.flatten)
+res = getPrediction(pred, coefs)
+
+res = res.map { |v| Math.exp(v.to_f) }
+puts "standard deviation prediction: #{leastS.std_dev(res)}"
+puts "Mean preditction: #{leastS.mean(res)}"
+
+CSV.open("./result3.csv", "wb") do |csv|
+	csv << ['Id', 'SalePrice']
+	res.each_with_index do |val, i|
+		csv << [i + 1461, val]
+	end
+end

@@ -1,0 +1,78 @@
+#!/usr/bin/ruby
+require './src/RbLearning'
+
+# csv = CSV.open("./res1.csv", "wb")
+# csv << ['ImageId', 'Label']
+# i = 0
+# File.foreach("res.csv") do |line|
+# 	if i != 0
+# 		id, res = line.split(',')
+# 		csv <<  [id.to_i - 1, res.to_i]
+# 	end
+# 	i += 1
+# end
+
+
+cnn = Cnn.new('./input/lol.csv')
+# cnn = Cnn.new('./input/train.csv')
+res = cnn.remove('label')
+cnn.matrixGen
+
+
+nn = NeuroNet.new
+
+x = Matrix.setVectorizedMatrix(cnn.matrix[0...1300], 1300, cnn.matrix.size_x)
+x.normalize(255)
+# w1 = nn.initWeights(784, 128, -1.0, 1.0)
+# w2 = nn.initWeights(128, 64, -1.0, 1.0)
+# w3 = nn.initWeights(64, 10, -1.0, 1.0)
+
+w1 = nn.initWeights(784, 64, -1.0, 1.0)
+w2 = nn.initWeights(64, 10, -1.0, 1.0)
+
+# w1 = nn.initWeights(784, 10, -1.0, 1.0)
+
+# b1 = Matrix.new(10, 1)
+
+b1 = Matrix.new(64, 1)
+b2 = Matrix.new(10, 1)
+
+# b1 = Matrix.new(128, 1)
+# b2 = Matrix.new(64, 1)
+# b3 = Matrix.new(10, 1)
+
+y = Matrix.set(res[0...1300].map do |i|
+	tmp = [0] * 10
+	tmp[i.to_i] = 1
+	tmp
+end)
+
+# ws = [w1]
+# bs = [b1]
+ws = [w1, w2]
+bs = [b1, b2]
+# ws = [w1, w2, w3]
+# bs = [b1, b2, b3]
+
+
+(0...10000).each do |i|
+	ws, bs = nn.train(ws, bs, x, y, 0.001)
+	puts i
+end
+
+tests = Cnn.new('./input/test.csv')
+# tests = Cnn.new('./input/lol.csv')
+tests.matrixGen
+x = Matrix.setVectorizedMatrix(tests.matrix.matrix, tests.matrix.size_y, tests.matrix.size_x)
+
+x.normalize(255)
+zs, acts = nn.feedForward(ws, x, bs)
+# act.last.printM(3)
+
+CSV.open("./res2.csv", "wb") do |csv|
+	csv << ['ImageId', 'Label']
+	m = acts.last.get2DArr
+	(0...acts.last.size_y).each do |i|
+		csv <<  [i + 1, m[i].each_with_index.max.last]
+	end
+end

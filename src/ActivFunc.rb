@@ -21,7 +21,7 @@ module ActivFunc
 	end
 
 	def sigmoidUnit(x)
-		1.0 / (1.0 + Math.exp(-x))
+		1.0 / (1.0 + CMath.expo(-x))
 	end
 
 	def sigmoid(m)
@@ -37,7 +37,7 @@ module ActivFunc
 	def sigmoidPrime(m)
 		Matrix.setVectorizedMatrix(
 		      m.matrix.map do |x|
-		      	Math.exp(-x) / (1.0 + Math.exp(-x))**2
+		      	CMath.expo(-x) / (1.0 + CMath.expo(-x))**2
 			end,
 			m.size_y,
 			m.size_x
@@ -47,7 +47,7 @@ module ActivFunc
 	def tanh(m)
 		Matrix.setVectorizedMatrix(
 		      m.matrix.map do |x|
-				(Math.exp(x) - Math.exp(-x)) / (Math.exp(x) + Math.exp(-x))
+				(CMath.expo(x) - CMath.expo(-x)) / (CMath.expo(x) + CMath.expo(-x))
 			end,
 			m.size_y,
 			m.size_x
@@ -57,7 +57,7 @@ module ActivFunc
 	def tanhPrime(m)
 		Matrix.setVectorizedMatrix(
 		      m.matrix.map do |x|
-				1.0 - Math.tanh(x)**2
+				1.0 - CMath.tanh(x)**2
 			end,
 			m.size_y,
 			m.size_x
@@ -67,7 +67,7 @@ module ActivFunc
 	def softMax(vect)
 		sum = 0.0
 		out = vect.map do |val|
-			tmp = Math.exp(val)
+			tmp = CMath.expo(val)
 			sum += tmp
 			tmp
 		end

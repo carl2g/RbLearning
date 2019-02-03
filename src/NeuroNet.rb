@@ -33,11 +33,11 @@ class NeuroNet
 		(0...ws.size - 1).reverse_each do |i|
 			tmp = dz * ws[i + 1].transpose
 			dz = tmp ** send(lossFunc, act[i + 1])
-			dw += [ws[i] - act[i].transpose * dz.applyOp(:*, lrn)]
-			db += [bs[i] - dz.sumAxis]
+			dw.push(ws[i] - act[i].transpose * dz.applyOp(:*, lrn))
+			db.push(bs[i] - dz.sumAxis)
 		end
 
-		return [dw.reverse, db.reverse]
+		return [dw.reverse!, db.reverse!]
 	end
 
 	def train(ws, bs, x, y, lrn = 0.05, actFunc = 'sigmoid', actFuncPrime = actFunc + "Prime")

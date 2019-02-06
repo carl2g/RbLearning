@@ -1,4 +1,4 @@
-require './src/ActivFunc'
+require_relative './ActivFunc'
 
 class Cnn
 

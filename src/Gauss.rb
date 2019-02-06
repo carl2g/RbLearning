@@ -1,5 +1,5 @@
-require './src/Matrix'
-require './src/Regressions'
+require_relative './Matrix'
+require_relative './Regressions'
 
 def switchLine(mat, y, x)
 	max = mat[y][x]

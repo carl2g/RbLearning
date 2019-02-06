@@ -57,22 +57,23 @@ module ActivFunc
 	def tanhPrime(m)
 		Matrix.setVectorizedMatrix(
 		      m.matrix.map do |x|
-				1.0 - CMath.tanh(x)**2
+				1.0 - Math.tanh(x)**2
 			end,
 			m.size_y,
 			m.size_x
 		)
 	end
 
-	def softMax(vect)
-		sum = 0.0
-		out = vect.map do |val|
-			tmp = CMath.expo(val)
-			sum += tmp
-			tmp
-		end
-		out = out.map {|val| (val / sum) }
-		return out
+	def softMax(m)
+		Matrix.set((0...m.size_y).map do |y|
+			sum = 0.0
+			out = (0...m.size_x).map do |x|
+				tmp = CMath.expo(m[y, x])
+				sum += tmp
+				tmp
+			end
+			out.map { |val| (val / sum) }
+		end)
 	end
 
 end

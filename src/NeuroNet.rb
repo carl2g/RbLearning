@@ -1,5 +1,5 @@
-require './src/ActivFunc'
-require './src/LossFunc'
+require_relative './ActivFunc'
+require_relative './LossFunc'
 
 class NeuroNet
 
@@ -10,11 +10,11 @@ class NeuroNet
 
 	end
 
-	def feedForward(ws, x, bs, actFunc = 'sigmoid')
+	def feedForward(layers, x, actFunc = 'sigmoid')
 		act = [x]
 		zs = []
-		(0...ws.size).each do |i|
-			x = x * ws[i] + bs[i]
+		layers.each do |l|
+			x = x * l.w + l.b
 			zs.push(x)
 			x = send(actFunc, x)
 			act.push(x)
@@ -22,40 +22,31 @@ class NeuroNet
 		return [zs, act]
 	end
 
-	def backPropagation(zs, act, y, ws, bs, lrn = 0.05, lossFunc = 'sigmoidPrime')
+	def backPropagation(zs, act, y, layers, lrn = 0.05, lossFunc = 'sigmoidPrime')
 		puts "Error: #{err(act.last, y)}"
-
-		i = ws.size - 1
+		i = layers.size - 1
 		dz = costFunc(act.last, y)
-		dw = [ws[i] - act[i].transpose * dz.applyOp(:*, lrn) ** send(lossFunc, act[i + 1])]
-		db = [bs[i] - dz.sumAxis]
+		dw = [layers[i].w - act[i].transpose * dz.applyOp(:*, lrn * (1.0 / dz.size_y)) ** send(lossFunc, act[i + 1])]
+		db = [layers[i].b - dz.sumAxis]
 
-		(0...ws.size - 1).reverse_each do |i|
-			tmp = dz * ws[i + 1].transpose
+		(0...layers.size - 1).reverse_each do |i|
+			tmp = dz * layers[i + 1].w.transpose
 			dz = tmp ** send(lossFunc, act[i + 1])
-			dw.push(ws[i] - act[i].transpose * dz.applyOp(:*, lrn))
-			db.push(bs[i] - dz.sumAxis)
+			dw.push(layers[i].w - act[i].transpose * dz.applyOp(:*, lrn * (1.0 / dz.size_y)))
+			db.push(layers[i].b - dz.sumAxis)
 		end
 
 		return [dw.reverse!, db.reverse!]
 	end
 
-	def train(ws, bs, x, y, lrn = 0.05, actFunc = 'sigmoid', actFuncPrime = actFunc + "Prime")
-		zs, act = feedForward(ws, x, bs, actFunc)
-		ws, bs = backPropagation(zs, act, y, ws, bs, lrn, actFuncPrime)
-		return [ws, bs]
-	end
-
-	def initWeights(size_y, size_x = size_y, min = -1.0, max = 1.0)
-		r = Random.new
-		w = Matrix.new(size_y, size_x)
-		(0...size_y).each do |y|
-			(0...size_x).each do |x|
-				w[y, x] = r.rand(min...max)
-			end
+	def train(layers, x, y, lrn = 0.05, actFunc = 'sigmoid', actFuncPrime = actFunc + "Prime")
+		zs, act = feedForward(layers, x, actFunc)
+		ws, bs = backPropagation(zs, act, y, layers, lrn, actFuncPrime)
+		(0...layers.size).each do |i|
+			layers[i].w = ws[i]
+			layers[i].b = bs[i]
 		end
-		return w
+		return layers
 	end
-
 
 end

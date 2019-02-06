@@ -2,7 +2,7 @@ require 'ffi'
 
 module MatrixLib
 	extend FFI::Library
-	ffi_lib "./lib/c_lib.so"
+	ffi_lib './../src/lib/c_lib.so'
 	attach_function :dot ,[:pointer, :pointer, :int, :int, :int], :pointer
 	attach_function :transpose ,[:pointer, :int, :int], :pointer
 	attach_function :mult ,[:pointer, :pointer, :int, :int], :pointer
@@ -12,7 +12,7 @@ end
 
 module CMath
 	extend FFI::Library
-	ffi_lib "./lib/c_lib.so"
+	ffi_lib './../src/lib/c_lib.so'
   	attach_function :expo, [:double], :double
 end
 

@@ -1,5 +1,5 @@
-require './src/Matrix'
-require './src/Gauss.rb'
+require_relative './Matrix'
+require_relative './Gauss.rb'
 
 def triangleEquationSolver(mat, vect_size = mat.size_x - 1)
 	vect_x = Array.new(vect_size) { |i| 0.0 }

@@ -20,21 +20,26 @@ nn = NeuroNet.new
 
 m = train.matrix
 
-size = 100
+size = 500
 x = Matrix.setVectorizedMatrix(m[0...size * m.size_x], size, m.size_x)
 
-l1 = NetLayer.new(x.size_x, 512)
-l2 = NetLayer.new(512, 128)
-l3 = NetLayer.new(128, 2)
+l1 = NetLayer.new(x.size_x, 2, 'sigmoid')
 
-# l1 = NetLayer.new(x.size_x, 128)
-# l2 = NetLayer.new(128, 2)
+# l1 = NetLayer.new(x.size_x, 256, 'sigmoid')
+# l2 = NetLayer.new(256, 128, 'sigmoid')
+# l3 = NetLayer.new(128, 64, 'sigmoid')
+# l4 = NetLayer.new(64, 32, 'sigmoid')
+# l5 = NetLayer.new(32, 16, 'sigmoid')
+# l6 = NetLayer.new(16, 8, 'sigmoid')
+# l7 = NetLayer.new(8, 2, 'sigmoid')
+
 
 # l1 = NetLayer.new(x.size_x, 2)
 
-# ws = [l1]
-# ws = [l1, l2]
-layers = [l1, l2, l3]
+layers = [l1]
+# layers = [l1, l2]
+# layers = [l1, l2, l3]
+# layers = [l1, l2, l3, l4, l5, l6, l7]
 
 y = Matrix.set(res[0...size].map do |i|
 	tmp = [0] * 2
@@ -42,8 +47,8 @@ y = Matrix.set(res[0...size].map do |i|
 	tmp
 end)
 
-(0...20000).each do |i|
-	layers = nn.train(layers, x, y, 0.1)
+(0...60000).each do |i|
+	layers = nn.train(layers, x, y, 0.03)
 	puts i
 end
 

@@ -19,11 +19,11 @@ class NeuroNet
 			x = send(l.actFunc, x)
 			act.push(x)
 		end
+		act.last.matrix = act.last.matrix.map { |res| res.round }
 		return [zs, act]
 	end
 
 	def backPropagation(zs, act, y, layers, lrn = 0.05)
-		puts "Error: #{err(act.last, y)}"
 		i = layers.size - 1
 		dz = costFunc(act.last, y)
 		dw = [layers[i].w - act[i].transpose * dz.applyOp(:*, lrn * (1.0 / dz.size_y)) ** send(layers[i].primeActFunc, act[i + 1])]

@@ -24,6 +24,10 @@ class Matrix
 		@matrix[y * @size_x + x] = val
 	end
 
+	def setLine(y, arr)
+		(0...arr.size).each { |i| @matrix[y, i] = arr[i] }
+	end
+
 	def set(arr)
 		@matrix = arr.flat_map do |line|
 			line.map do |val|

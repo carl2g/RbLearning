@@ -19,14 +19,14 @@ class Knn
 		@size_y = @hashed_data.first.last.size
 	end
 
-	def predict(data, m, expo_res, nb = 100)
+	def predict(data, m, c_exp_res, nb = 100)
 		res = {}
 		m.matrix.each_with_index do |line, i|
 			diff = 0
 			line.each_with_index do |val, x|
 				diff += Math.sqrt((data[x] - val.to_f)**2)
 			end
-			res[i] = { lab: expo_res[i], diff: diff }
+			res[i] = { lab: c_exp_res[i], diff: diff }
 		end
 		res = res.sort_by {|i, res|  res[:diff] }
 		final_res = {}

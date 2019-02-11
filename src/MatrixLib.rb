@@ -13,7 +13,8 @@ end
 module CMath
 	extend FFI::Library
 	ffi_lib './../src/lib/c_lib.so'
-  	attach_function :expo, [:double], :double
+  	attach_function :c_exp, [:double], :double
+  	attach_function :c_tanh, [:double], :double
 end
 
 module LibC

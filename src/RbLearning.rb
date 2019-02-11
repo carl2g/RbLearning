@@ -1,7 +1,6 @@
 require_relative './Matrix'
 require_relative './Gauss'
 require_relative './Regressions'
-require_relative './LeastS'
 require_relative './Knn'
 require_relative './Cnn'
 require_relative './ActivFunc'

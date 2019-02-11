@@ -6,7 +6,7 @@ module Statistics
 		return res / arr.size
 	end
 
-	def quarlite(datas, q)
+	def quartile(datas, q)
 		datas.sort[(datas.size * q) / 4]
 	end
 

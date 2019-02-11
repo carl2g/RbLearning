@@ -28,24 +28,24 @@ end
 
 def getPrediction(mat, coefs)
 	prediction = [0] * mat.size_y
-	mat.matrix.each_with_index do |line, i|
-		line.each_with_index do |val, x|
-			prediction[i] += val * coefs[x]
+	(0...mat.size_y).each do |y|
+		(0...mat.size_x).each do |x|
+			prediction[y] += mat[y, x] * coefs[x]
 		end
 	end
 	return prediction
 end
 
-def leastSquaredError(mat, coef, expoected_res)
+def leastSquaredError(mat, coef, c_expected_res)
 	err = 0.0
 
-	mat.matrix.each_with_index do |line, i|
+	(0...mat.size_y).each do |y|
 		found_price = 0.0
-		line.each_with_index do |val, x|
-			found_price += val * coef[x]
+		(0...mat.size_x).each do |x|
+			found_price += mat[y, x] * coef[x]
 		end
-		err += (expoected_res[i][0] - found_price)**2
+		err += (c_expected_res[y, 0] - found_price)**2
 	end
-	err = err / expoected_res.size_y
+	err = err / c_expected_res.size_y
 	return Math.sqrt(err)
 end

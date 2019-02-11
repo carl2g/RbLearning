@@ -33,7 +33,6 @@ class DataManager
 				m[x, y] = val[x].to_f
 			end
 		end
-		# m.printM
 		return m
 	end
 
@@ -97,5 +96,41 @@ class DataManager
 	def labels
 		@hashed_data.keys
 	end
+
+	def removeRaws(rm)
+		self.labels.each do |l|
+			removeRaw(l, rm)
+		end
+	end
+
+	def removeRaw(key, rm)
+		self[key].each_with_index.reverse_each do |val, i|
+			removeAt(i) if val == rm
+		end
+	end
+
+	def removeAt(i)
+		self.labels.each do |l|
+			self[l].delete_at(i)
+		end
+		updateSizeInfo
+	end
+
+	def removeKeysNullVall(perc, val = nil, keys = self.labels)
+		keys.each do |key|
+			removeKeyNullVal(key, perc, val)
+		end
+	end
+
+	def removeKeyNullVal(key, perc, val = nil)
+		self.remove(key) if self[key].count(val) >= (@size_y / 100.0) * perc
+	end
+
+	private
+
+		def updateSizeInfo
+			@size_x = @hashed_data.size
+			@size_y = @hashed_data.first.last.size
+		end
 
 end

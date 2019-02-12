@@ -21,7 +21,7 @@ module ActivFunc
 	end
 
 	def sigmoidUnit(x)
-		1.0 / (1.0 + CMath.c_exp(-x))
+		1.0 / (1.0 + CMath.exp(-x))
 	end
 
 	def sigmoid(m)
@@ -37,7 +37,7 @@ module ActivFunc
 	def sigmoidPrime(m)
 		Matrix.setVectorizedMatrix(
 		      m.matrix.map do |x|
-		      	CMath.c_exp(-x) / (1.0 + CMath.c_exp(-x))**2
+		      	CMath.exp(-x) / (1.0 + CMath.exp(-x))**2
 			end,
 			m.size_y,
 			m.size_x
@@ -47,7 +47,7 @@ module ActivFunc
 	def tanh(m)
 		Matrix.setVectorizedMatrix(
 		      m.matrix.map do |x|
-				CMath.c_tanh(x)
+				CMath.tanh(x)
 			end,
 			m.size_y,
 			m.size_x
@@ -57,7 +57,7 @@ module ActivFunc
 	def tanhPrime(m)
 		Matrix.setVectorizedMatrix(
 		      m.matrix.map do |x|
-				1.0 - Math.tanh(x)**2
+				1.0 - CMath.tanh(x)**2
 			end,
 			m.size_y,
 			m.size_x
@@ -68,7 +68,7 @@ module ActivFunc
 		Matrix.set((0...m.size_y).map do |y|
 			sum = 0.0
 			out = (0...m.size_x).map do |x|
-				tmp = CMath.c_exp(m[y, x])
+				tmp = CMath.exp(m[y, x])
 				sum += tmp
 				tmp
 			end

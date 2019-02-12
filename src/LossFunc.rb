@@ -4,7 +4,7 @@ module LossFunc
 		prob - res
 	end
 
-	def meanSqrErr(pred, res)
+	def meanSqrtErr(pred, res)
 		err = 0
 		(0...pred.size_y).each do |y|
 			(0...pred.size_x).each do |x|

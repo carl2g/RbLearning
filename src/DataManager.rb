@@ -97,6 +97,16 @@ class DataManager
 		@hashed_data.keys
 	end
 
+	def normalize
+		self.labels.each do |key|
+			self[key].map! { |e| e.to_f }
+			max = self[key].max
+			min = self[key].min
+			norm = max < min.abs ? min : max
+			self[key].map! { |e| norm != 0 ? e / norm : e }
+		end
+	end
+
 	def removeRaws(rm)
 		self.labels.each do |l|
 			removeRaw(l, rm)

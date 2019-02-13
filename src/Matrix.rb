@@ -76,6 +76,7 @@ class Matrix
 	end
 
 	def *(matrix)
+		throw "[#{self.size_y}, #{self.size_x}] [#{matrix.size_y}, #{matrix.size_x}]" if self.size_x != matrix.size_y
 		vec1 = self.to_vect
 		ptr1 = FFI::MemoryPointer.new(:float, vec1.size)
 		ptr1.write_array_of_float(vec1)

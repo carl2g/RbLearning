@@ -22,30 +22,32 @@ class NeuroNet
 		return [zs, act]
 	end
 
-	def backPropagation(zs, act, y, layers, lrn = 0.05)
-		puts "Error: #{meanAbsErr(act.last, y)}"
+
+	def backPropagation(zs, act, y, layers, lrn = 0.005)
 		i = layers.size - 1
-		dz = costFunc(act.last, y)
-		dw = [layers[i].w - act[i].transpose * dz.applyOp(:*, lrn * (1.0 / dz.size_y)) ** send(layers[i].primeActFunc, act[i + 1])]
-		db = [layers[i].b - dz.sumAxis]
+		data_size = act.first.size_y
+		# dErr(A(Z(x))) ** dA(Z(x)) * dZ(x)
+		dz = costFunc(act[i + 1], y) ** send(layers[i].primeActFunc, zs[i])
+		dw = [layers[i].w - (act[i].transpose * dz).applyOp(:*, lrn / dz.size_y)]
+		db = [layers[i].b - dz.sumAxis.applyOp(:*, lrn / dz.size_y)]
 
 		(0...layers.size - 1).reverse_each do |i|
 			tmp = dz * layers[i + 1].w.transpose
-			dz = tmp ** send(layers[i].primeActFunc, act[i + 1])
-			dw.push(layers[i].w - act[i].transpose * dz.applyOp(:*, lrn * (1.0 / dz.size_y)))
-			db.push(layers[i].b - dz.sumAxis)
+			dz = tmp ** send(layers[i].primeActFunc, zs[i])
+			dw.push(layers[i].w - (act[i].transpose * dz).applyOp(:*, lrn / dz.size_y))
+			db.push(layers[i].b - dz.sumAxis.applyOp(:*, lrn / dz.size_y))
 		end
-
 		return [dw.reverse!, db.reverse!]
 	end
 
-	def train(layers, x, y, lrn = 0.05)
+	def train(layers, x, y, lrn = 0.05, printErr = false)
 		zs, act = feedForward(layers, x)
 		ws, bs = backPropagation(zs, act, y, layers, lrn)
 		(0...layers.size).each do |i|
 			layers[i].w = ws[i]
 			layers[i].b = bs[i]
 		end
+		puts "Error: #{meanAbsErr(act.last, y)}" if printErr
 		return layers
 	end
 

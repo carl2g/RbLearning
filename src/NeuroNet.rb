@@ -25,17 +25,16 @@ class NeuroNet
 
 	def backPropagation(zs, act, y, layers, lrn = 0.005)
 		i = layers.size - 1
-		data_size = act.first.size_y
-		# dErr(A(Z(x))) ** dA(Z(x)) * dZ(x)
+
 		dz = costFunc(act[i + 1], y) ** send(layers[i].primeActFunc, zs[i])
-		dw = [layers[i].w - (act[i].transpose * dz).applyOp(:*, lrn / dz.size_y)]
-		db = [layers[i].b - dz.sumAxis.applyOp(:*, lrn / dz.size_y)]
+		dw = [layers[i].w - (act[i].transpose * dz).applyOp(:*, lrn / dz.size_x)]
+		db = [layers[i].b - dz.sumOrd.applyOp(:*, lrn / dz.size_x)]
 
 		(0...layers.size - 1).reverse_each do |i|
 			tmp = dz * layers[i + 1].w.transpose
 			dz = tmp ** send(layers[i].primeActFunc, zs[i])
-			dw.push(layers[i].w - (act[i].transpose * dz).applyOp(:*, lrn / dz.size_y))
-			db.push(layers[i].b - dz.sumAxis.applyOp(:*, lrn / dz.size_y))
+			dw.push(layers[i].w - (act[i].transpose * dz).applyOp(:*, lrn / dz.size_x))
+			db.push(layers[i].b - dz.sumOrd.applyOp(:*, lrn / dz.size_x))
 		end
 		return [dw.reverse!, db.reverse!]
 	end

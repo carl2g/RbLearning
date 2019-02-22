@@ -47,7 +47,7 @@ module Statistics
 		dev = 0
 		mean = self.mean(arr)
 		arr.each { |val| dev += (mean - val.to_f)**2 }
-		return dev / arr.size
+		return dev / arr.size.to_f
 	end
 
 	def std_dev(arr)

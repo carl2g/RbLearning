@@ -6,7 +6,7 @@ class DataManager
 	include Statistics
 	include Utils
 
-	attr_accessor :hashed_data, :size_x, :size_y
+	attr_accessor :hashed_data, :size_x, :size_y, :mat
 
 	def initialize(csv_file)
 		content 		= CSV.read(csv_file)
@@ -22,7 +22,7 @@ class DataManager
 		@size_y = @hashed_data.first.last.size
 	end
 
-	def matrix(with = self.labels)
+	def matrixGenerate(with = self.labels)
 		newH = @hashed_data.select { |key, val| with.include?(key) }
 		size_y = @size_y
 		size_x = newH.keys.size
@@ -34,6 +34,11 @@ class DataManager
 			end
 		end
 		return m
+	end
+
+	def matrix
+		@mat = self.matrixGenerate if mat.nil?
+		return @mat
 	end
 
 	def [](key)
@@ -100,9 +105,9 @@ class DataManager
 	def normalize
 		self.labels.each do |key|
 			self[key].map! { |e| e.to_f }
-			max = self[key].max
-			min = self[key].min
-			norm = max < min.abs ? min : max
+			max = self[key].max.abs
+			min = self[key].min.abs
+			norm = max < min ? min : max
 			self[key].map! { |e| norm != 0 ? e / norm : e }
 		end
 	end
@@ -134,6 +139,22 @@ class DataManager
 
 	def removeKeyNullVal(key, perc, val = nil)
 		self.remove(key) if self[key].count(val) >= (@size_y / 100.0) * perc
+	end
+
+	def batch(data_y, size = 24)
+		r = Random.new
+
+		indexes = (0...size).map { r.rand(0...matrix.size_y) }
+		
+		batch_x = Matrix.set(indexes.map do |i|
+			matrix[i]
+		end)
+
+		batch_y = Matrix.set(indexes.map do |i|
+			data_y[i]
+		end)
+
+		return [batch_x, batch_y]
 	end
 
 	private

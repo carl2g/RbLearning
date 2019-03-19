@@ -1,0 +1,42 @@
+#!/usr/bin/ruby
+
+require './../src/RbLearning'
+require 'csv'
+
+train = DataManager.new("./input/train.csv")
+train.remove('id')
+data_y = train.remove('target')
+
+
+# train.normalize
+# tests.normalize
+
+mat = train.matrix
+
+res = Matrix.setVectorizedMatrix(data_y, data_y.size, 1)
+# res.printM
+# exit
+coefs = poylnomialRegression(mat, res)
+
+
+# mat.printM
+# coefs.printM
+# res.printM
+
+tests = DataManager.new("./input/test.csv")
+tests.remove('id')
+pred = tests.matrix
+
+
+puts "error: #{leastSquaredError(mat, coefs, res)}"
+res = getPrediction(pred, coefs)
+
+puts "standard deviation prediction: #{tests.std_dev(res)}"
+puts "Mean preditction: #{tests.mean(res)}"
+
+CSV.open("./result1.csv", "wb") do |csv|
+	csv << ['id', 'target']
+	res.each_with_index do |val, i|
+		csv << [i + data_y.size, val.round > 0.5 ? 1 : 0]
+	end
+end

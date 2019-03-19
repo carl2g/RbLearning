@@ -89,7 +89,7 @@ class DataManager
 
 	def addDumie(label, null_val = [])
 		values = self.remove(label)
-		exising_values = values.uniq.reject { |val| self.is_numeric?(val) || null_val.include?(val) }
+		exising_values = values.uniq.reject { |val| null_val.include?(val) }
 		exising_values.each { |lab| @hashed_data[label + '_' + lab.to_s] = [] if !@hashed_data[lab] }
 		(0...@size_y).each do |i|
 			exising_values.each do |val|
@@ -145,7 +145,7 @@ class DataManager
 		r = Random.new
 
 		indexes = (0...size).map { r.rand(0...matrix.size_y) }
-		
+
 		batch_x = Matrix.set(indexes.map do |i|
 			matrix[i]
 		end)

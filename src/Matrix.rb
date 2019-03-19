@@ -66,10 +66,10 @@ class Matrix
 
 	def transpose
 		vec = self.to_vect
-		ptr = FFI::MemoryPointer.new(:float, vec.size)
-		ptr.write_array_of_float(vec)
+		ptr = FFI::MemoryPointer.new(:double, vec.size)
+		ptr.write_array_of_double(vec)
 		res = MatrixLib.transpose(ptr, self.size_y, self.size_x)
-		vect = res.read_array_of_float(self.size_y * self.size_x)
+		vect = res.read_array_of_double(self.size_y * self.size_x)
 		m = Matrix.setVectorizedMatrix(vect, self.size_x, self.size_y)
 		LibC.free(res)
 		return m
@@ -78,13 +78,13 @@ class Matrix
 	def *(matrix)
 		throw "[#{self.size_y}, #{self.size_x}] [#{matrix.size_y}, #{matrix.size_x}]" if self.size_x != matrix.size_y
 		vec1 = self.to_vect
-		ptr1 = FFI::MemoryPointer.new(:float, vec1.size)
-		ptr1.write_array_of_float(vec1)
+		ptr1 = FFI::MemoryPointer.new(:double, vec1.size)
+		ptr1.write_array_of_double(vec1)
 		vec2 = matrix.to_vect
-		ptr2 = FFI::MemoryPointer.new(:float, vec2.size)
-		ptr2.write_array_of_float(vec2)
+		ptr2 = FFI::MemoryPointer.new(:double, vec2.size)
+		ptr2.write_array_of_double(vec2)
 		res = MatrixLib.dot(ptr1, ptr2, self.size_y, matrix.size_x, self.size_x)
-		vect = res.read_array_of_float(self.size_y * matrix.size_x)
+		vect = res.read_array_of_double(self.size_y * matrix.size_x)
 		m = Matrix.setVectorizedMatrix(vect, self.size_y, matrix.size_x)
 		LibC.free(res)
 		return m
@@ -93,13 +93,13 @@ class Matrix
 	def +(matrix)
 		m = boardcasting(matrix, self.size_y, self.size_x)
 		vec1 = self.to_vect
-		ptr1 = FFI::MemoryPointer.new(:float, vec1.size)
-		ptr1.write_array_of_float(vec1)
+		ptr1 = FFI::MemoryPointer.new(:double, vec1.size)
+		ptr1.write_array_of_double(vec1)
 		vec2 = m.to_vect
-		ptr2 = FFI::MemoryPointer.new(:float, vec2.size)
-		ptr2.write_array_of_float(vec2)
+		ptr2 = FFI::MemoryPointer.new(:double, vec2.size)
+		ptr2.write_array_of_double(vec2)
 		res = MatrixLib.add(ptr1, ptr2, self.size_y, self.size_x)
-		vect = res.read_array_of_float(self.size_y * self.size_x)
+		vect = res.read_array_of_double(self.size_y * self.size_x)
 		m = Matrix.setVectorizedMatrix(vect, self.size_y, self.size_x)
 		LibC.free(res)
 		return m
@@ -108,13 +108,13 @@ class Matrix
 	def **(matrix)
 		m = boardcasting(matrix, self.size_y, self.size_x)
 		vec1 = self.to_vect
-		ptr1 = FFI::MemoryPointer.new(:float, vec1.size)
-		ptr1.write_array_of_float(vec1)
+		ptr1 = FFI::MemoryPointer.new(:double, vec1.size)
+		ptr1.write_array_of_double(vec1)
 		vec2 = m.to_vect
-		ptr2 = FFI::MemoryPointer.new(:float, vec2.size)
-		ptr2.write_array_of_float(vec2)
+		ptr2 = FFI::MemoryPointer.new(:double, vec2.size)
+		ptr2.write_array_of_double(vec2)
 		res = MatrixLib.mult(ptr1, ptr2, self.size_y, self.size_x)
-		vect = res.read_array_of_float(self.size_y * self.size_x)
+		vect = res.read_array_of_double(self.size_y * self.size_x)
 		m = Matrix.setVectorizedMatrix(vect, self.size_y, self.size_x)
 		LibC.free(res)
 		return m
@@ -123,13 +123,13 @@ class Matrix
 	def -(matrix)
 		m = boardcasting(matrix, self.size_y, self.size_x)
 		vec1 = self.to_vect
-		ptr1 = FFI::MemoryPointer.new(:float, vec1.size)
-		ptr1.write_array_of_float(vec1)
+		ptr1 = FFI::MemoryPointer.new(:double, vec1.size)
+		ptr1.write_array_of_double(vec1)
 		vec2 = m.to_vect
-		ptr2 = FFI::MemoryPointer.new(:float, vec2.size)
-		ptr2.write_array_of_float(vec2)
+		ptr2 = FFI::MemoryPointer.new(:double, vec2.size)
+		ptr2.write_array_of_double(vec2)
 		res = MatrixLib.subtract(ptr1, ptr2, self.size_y, self.size_x)
-		vect = res.read_array_of_float(self.size_y * self.size_x)
+		vect = res.read_array_of_double(self.size_y * self.size_x)
 		m = Matrix.setVectorizedMatrix(vect, self.size_y, self.size_x)
 		LibC.free(res)
 		return m

@@ -1,12 +1,10 @@
-CC 		= 	gcc
+CC 		= 	nvcc
 
 NAME 		=	c_lib.so
 
-SRCS 		= 	src/matrix_lib.c
+SRCS 		= 	src/matrix_lib.cu
 
-FLAGS 	= 	-Ofast -shared -fpic -lm -o
-
-OBJS 		= 	$(SRCS:.c=.o)
+FLAGS 	= 	--shared --ptxas-options=-v --compiler-options '-fPIC' --linker-options -lm --use_fast_math
 
 RM 		=	rm -rf
 
@@ -18,8 +16,8 @@ MKDIR 	= 	mkdir -p
 
 all: 			$(NAME)
 
-$(NAME): 		$(OBJS)
-			$(CC) $(SRCS) $(FLAGS) $(NAME)
+$(NAME): 		$(SRCS)
+			$(CC) $(FLAGS) $(SRCS) -o $(NAME)
 
 install:
 			$(MKDIR) $(LIB_DIR)

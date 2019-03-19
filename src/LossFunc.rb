@@ -11,7 +11,7 @@ module LossFunc
 				err += (pred[y, x] - res[y, x])**2
 			end
 		end
-		return err / pred.size_y
+		return (err / pred.size_y)**0.5
 	end
 
 	def meanAbsErr(pred, res)

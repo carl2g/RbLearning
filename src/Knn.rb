@@ -1,5 +1,4 @@
 require 'csv'
-require 'bitmap'
 
 class Knn
 

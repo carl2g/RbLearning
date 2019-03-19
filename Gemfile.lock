@@ -4,7 +4,10 @@ GEM
     ffi (1.10.0)
     matplotlib (1.0.0)
       pycall (>= 1.0.0)
+    numo-narray (0.9.1.4)
     pycall (1.2.1)
+    rumale (0.8.1)
+      numo-narray (>= 0.9.1)
 
 PLATFORMS
   ruby
@@ -12,6 +15,7 @@ PLATFORMS
 DEPENDENCIES
   ffi
   matplotlib
+  rumale
 
 BUNDLED WITH
    1.17.2

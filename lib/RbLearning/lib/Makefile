@@ -24,11 +24,8 @@ install:
 			$(MV) $(NAME) $(LIB_DIR)
 
 clean:
-			$(RM) $(OBJS)
-
-fclean: 		clean
 			$(RM) $(NAME)
 
-re: 			fclean all
+re: 			all
 
-.PHONY: 		all clean fclean re
+.PHONY: 		all clean re

@@ -20,6 +20,11 @@ __global__ void cuda_sub(const double *m1, const double *m2, double *new_m) {
 	new_m[blockIdx.x] = m1[blockIdx.x] - m2[blockIdx.x];
 }
 
+
+__global__ void cuda_add(const double *m1, const double *m2, double *new_m) {
+	new_m[blockIdx.x] = m1[blockIdx.x] + m2[blockIdx.x];
+}
+
 extern "C" {
 
 	double *dot(const double *m1, const double *m2, int size_y, int size_v, int size_x) {
@@ -100,13 +105,25 @@ extern "C" {
 		return(new_m);
 	}
 
-	double *add(const double *m1, const double *m2, int size_y, int size_x) {
-		int size = size_x * size_y;
-		double *new_m = (double *)malloc(sizeof(double) * size);
+	double *add(const double *m1, const double *m2, int size) {
+		double *new_m 		= (double *)malloc((size) * sizeof(double));
+		double *cuda_new_m 	= NULL;
+		double *cuda_m1 		= NULL;
+		double *cuda_m2 		= NULL;
 
-		for (int i = 0; i < size; ++i) {
-			new_m[i] = m1[i] + m2[i];
-		}
-		return (new_m);
+		cudaMalloc((void**)&cuda_new_m, size * sizeof(double));
+		cudaMalloc((void**)&cuda_m1, size * sizeof(double));
+		cudaMalloc((void**)&cuda_m2, size * sizeof(double));
+
+		cudaMemcpy(cuda_m1, m1, (size) * sizeof(double), cudaMemcpyHostToDevice);
+		cudaMemcpy(cuda_m2, m2, (size) * sizeof(double), cudaMemcpyHostToDevice);
+
+		cuda_add<<<size, 1>>>(cuda_m1, cuda_m2, cuda_new_m);
+		cudaMemcpy(new_m, cuda_new_m, size * sizeof(double), cudaMemcpyDeviceToHost);
+
+		cudaFree(cuda_new_m);
+		cudaFree(cuda_m1);
+		cudaFree(cuda_m2);
+		return(new_m);
 	}
 }

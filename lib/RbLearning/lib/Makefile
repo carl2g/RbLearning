@@ -4,7 +4,7 @@ NAME 		=	c_lib.so
 
 SRCS 		= 	src/matrix_lib.cu
 
-FLAGS 	= 	--shared --ptxas-options=-v --compiler-options '-fPIC' --linker-options -lm --use_fast_math
+FLAGS 	= 	--shared --compiler-options '-fPIC' --linker-options -lm --use_fast_math
 
 RM 		=	rm -rf
 

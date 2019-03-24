@@ -67,6 +67,38 @@ class MatrixTest < Test::Unit::TestCase
         assert(ass, "Test sub_2 failed")
     end
 
+    def test_add_1
+        m1 = Matrix.set([
+            [1, 2],
+            [3, 4],
+            [5, 6],
+            [7, 8]
+        ])
+        m2 = Matrix.set([
+            [1, 2],
+            [3, 4],
+            [5, 6],
+            [7, 8]
+        ])
+        res = (m1 + m2)
+        ass = (res.matrix == [2, 4, 6, 8, 10, 12, 14, 16])
+        assert(ass, "Test add_1 failed")
+    end
+
+    def test_add_2
+        m1 = Matrix.set([
+            [1, 2, 3, 4],
+            [5, 6, 7, 8],
+        ])
+        m2 = Matrix.set([
+            [2, 1, 4, 3],
+            [6, 5, 7, 7]
+        ])
+        res = (m1 + m2)
+        ass = (res.matrix == [3, 3, 7, 7, 11, 11, 14, 15])
+        assert(ass, "Test add_2 failed")
+    end
+
     def test_dot_1
         m1 = Matrix.set([
             [1, 2],

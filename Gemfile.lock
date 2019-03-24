@@ -2,20 +2,14 @@ GEM
   remote: https://rubygems.org/
   specs:
     ffi (1.10.0)
-    matplotlib (1.0.0)
-      pycall (>= 1.0.0)
-    numo-narray (0.9.1.4)
-    pycall (1.2.1)
-    rumale (0.8.1)
-      numo-narray (>= 0.9.1)
+    rake (12.3.2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   ffi
-  matplotlib
-  rumale
+  rake
 
 BUNDLED WITH
    1.17.2

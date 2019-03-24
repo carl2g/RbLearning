@@ -1,3 +1,5 @@
+require_relative './lib/MatrixLib'
+
 class Matrix
 
 	attr_accessor :matrix, :size_x, :size_y
@@ -113,7 +115,7 @@ class Matrix
 		vec2 = m.to_vect
 		ptr2 = FFI::MemoryPointer.new(:double, vec2.size)
 		ptr2.write_array_of_double(vec2)
-		res = MatrixLib.mult(ptr1, ptr2, self.size_y, self.size_x)
+		res = MatrixLib.mult(ptr1, ptr2, self.size_y * self.size_x)
 		vect = res.read_array_of_double(self.size_y * self.size_x)
 		m = Matrix.setVectorizedMatrix(vect, self.size_y, self.size_x)
 		LibC.free(res)

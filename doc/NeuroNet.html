@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Class: NeuroNet
+  
+    &mdash; Documentation by YARD 0.9.18
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "NeuroNet";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index (N)</a> &raquo;
+    
+    
+    <span class="title">NeuroNet</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Class: NeuroNet
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">NeuroNet</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+    </dd>
+  </dl>
+  
+
+  
+  
+  
+  
+  <dl>
+      <dt>Includes:</dt>
+      <dd><span class='object_link'><a href="ActivFunc.html" title="ActivFunc (module)">ActivFunc</a></span>, <span class='object_link'><a href="LossFunc.html" title="LossFunc (module)">LossFunc</a></span></dd>
+  </dl>
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/RbLearning/NeuroNet.rb</dd>
+  </dl>
+  
+</div>
+
+
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#backPropagation-instance_method" title="#backPropagation (instance method)">#<strong>backPropagation</strong>(zs, act, y, layers)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#dropOut-instance_method" title="#dropOut (instance method)">#<strong>dropOut</strong>(layers, act)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#feedForward-instance_method" title="#feedForward (instance method)">#<strong>feedForward</strong>(layers, x)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>  &#x21d2; NeuroNet </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>A new instance of NeuroNet.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#train-instance_method" title="#train (instance method)">#<strong>train</strong>(layers, x, y, printErr = false)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="LossFunc.html" title="LossFunc (module)">LossFunc</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="LossFunc.html#costFunc-instance_method" title="LossFunc#costFunc (method)">#costFunc</a></span>, <span class='object_link'><a href="LossFunc.html#meanAbsErr-instance_method" title="LossFunc#meanAbsErr (method)">#meanAbsErr</a></span>, <span class='object_link'><a href="LossFunc.html#meanSqrtErr-instance_method" title="LossFunc#meanSqrtErr (method)">#meanSqrtErr</a></span></p>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="ActivFunc.html" title="ActivFunc (module)">ActivFunc</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="ActivFunc.html#reLu-instance_method" title="ActivFunc#reLu (method)">#reLu</a></span>, <span class='object_link'><a href="ActivFunc.html#reLuPrime-instance_method" title="ActivFunc#reLuPrime (method)">#reLuPrime</a></span>, <span class='object_link'><a href="ActivFunc.html#sigmoid-instance_method" title="ActivFunc#sigmoid (method)">#sigmoid</a></span>, <span class='object_link'><a href="ActivFunc.html#sigmoidPrime-instance_method" title="ActivFunc#sigmoidPrime (method)">#sigmoidPrime</a></span>, <span class='object_link'><a href="ActivFunc.html#sigmoidUnit-instance_method" title="ActivFunc#sigmoidUnit (method)">#sigmoidUnit</a></span>, <span class='object_link'><a href="ActivFunc.html#softMax-instance_method" title="ActivFunc#softMax (method)">#softMax</a></span>, <span class='object_link'><a href="ActivFunc.html#tanh-instance_method" title="ActivFunc#tanh (method)">#tanh</a></span>, <span class='object_link'><a href="ActivFunc.html#tanhPrime-instance_method" title="ActivFunc#tanhPrime (method)">#tanhPrime</a></span></p>
+<div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    #<strong>initialize</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="NeuroNet (class)">NeuroNet</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns a new instance of NeuroNet</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+9
+10
+11</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/RbLearning/NeuroNet.rb', line 9</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span>
+
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="backPropagation-instance_method">
+  
+    #<strong>backPropagation</strong>(zs, act, y, layers)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/RbLearning/NeuroNet.rb', line 42</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_backPropagation'>backPropagation</span><span class='lparen'>(</span><span class='id identifier rubyid_zs'>zs</span><span class='comma'>,</span> <span class='id identifier rubyid_act'>act</span><span class='comma'>,</span> <span class='id identifier rubyid_y'>y</span><span class='comma'>,</span> <span class='id identifier rubyid_layers'>layers</span><span class='rparen'>)</span>
+	<span class='id identifier rubyid_i'>i</span> <span class='op'>=</span> <span class='id identifier rubyid_layers'>layers</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>-</span> <span class='int'>1</span>
+
+	<span class='id identifier rubyid_dz'>dz</span> <span class='op'>=</span> <span class='id identifier rubyid_costFunc'>costFunc</span><span class='lparen'>(</span><span class='id identifier rubyid_act'>act</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span> <span class='op'>+</span> <span class='int'>1</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_y'>y</span><span class='rparen'>)</span> <span class='op'>**</span> <span class='id identifier rubyid_send'>send</span><span class='lparen'>(</span><span class='id identifier rubyid_layers'>layers</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_primeActFunc'>primeActFunc</span><span class='comma'>,</span> <span class='id identifier rubyid_zs'>zs</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+	<span class='id identifier rubyid_dw'>dw</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_layers'>layers</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_w'>w</span> <span class='op'>-</span> <span class='lparen'>(</span><span class='id identifier rubyid_act'>act</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_transpose'>transpose</span> <span class='op'>*</span> <span class='id identifier rubyid_dz'>dz</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_applyOp'>applyOp</span><span class='lparen'>(</span><span class='symbol'>:*</span><span class='comma'>,</span> <span class='id identifier rubyid_layers'>layers</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_lrn'>lrn</span> <span class='op'>/</span> <span class='id identifier rubyid_dz'>dz</span><span class='period'>.</span><span class='id identifier rubyid_size_x'>size_x</span><span class='rparen'>)</span><span class='rbracket'>]</span>
+	<span class='id identifier rubyid_db'>db</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_layers'>layers</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_b'>b</span> <span class='op'>-</span> <span class='id identifier rubyid_dz'>dz</span><span class='period'>.</span><span class='id identifier rubyid_sumOrd'>sumOrd</span><span class='period'>.</span><span class='id identifier rubyid_applyOp'>applyOp</span><span class='lparen'>(</span><span class='symbol'>:*</span><span class='comma'>,</span> <span class='id identifier rubyid_layers'>layers</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_lrn'>lrn</span> <span class='op'>/</span> <span class='id identifier rubyid_dz'>dz</span><span class='period'>.</span><span class='id identifier rubyid_size_x'>size_x</span><span class='rparen'>)</span><span class='rbracket'>]</span>
+
+	<span class='lparen'>(</span><span class='int'>0</span><span class='op'>...</span><span class='id identifier rubyid_layers'>layers</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>-</span> <span class='int'>1</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_reverse_each'>reverse_each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_i'>i</span><span class='op'>|</span>
+		<span class='id identifier rubyid_tmp'>tmp</span> <span class='op'>=</span> <span class='id identifier rubyid_dz'>dz</span> <span class='op'>*</span> <span class='id identifier rubyid_layers'>layers</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span> <span class='op'>+</span> <span class='int'>1</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_w'>w</span><span class='period'>.</span><span class='id identifier rubyid_transpose'>transpose</span>
+		<span class='id identifier rubyid_dz'>dz</span> <span class='op'>=</span> <span class='id identifier rubyid_tmp'>tmp</span> <span class='op'>**</span> <span class='id identifier rubyid_send'>send</span><span class='lparen'>(</span><span class='id identifier rubyid_layers'>layers</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_primeActFunc'>primeActFunc</span><span class='comma'>,</span> <span class='id identifier rubyid_zs'>zs</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+		<span class='id identifier rubyid_dw'>dw</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span><span class='lparen'>(</span><span class='id identifier rubyid_layers'>layers</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_w'>w</span> <span class='op'>-</span> <span class='lparen'>(</span><span class='id identifier rubyid_act'>act</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_transpose'>transpose</span> <span class='op'>*</span> <span class='id identifier rubyid_dz'>dz</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_applyOp'>applyOp</span><span class='lparen'>(</span><span class='symbol'>:*</span><span class='comma'>,</span> <span class='id identifier rubyid_layers'>layers</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_lrn'>lrn</span> <span class='op'>/</span> <span class='id identifier rubyid_dz'>dz</span><span class='period'>.</span><span class='id identifier rubyid_size_x'>size_x</span><span class='rparen'>)</span><span class='rparen'>)</span>
+		<span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span><span class='lparen'>(</span><span class='id identifier rubyid_layers'>layers</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_b'>b</span> <span class='op'>-</span> <span class='id identifier rubyid_dz'>dz</span><span class='period'>.</span><span class='id identifier rubyid_sumOrd'>sumOrd</span><span class='period'>.</span><span class='id identifier rubyid_applyOp'>applyOp</span><span class='lparen'>(</span><span class='symbol'>:*</span><span class='comma'>,</span> <span class='id identifier rubyid_layers'>layers</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_lrn'>lrn</span> <span class='op'>/</span> <span class='id identifier rubyid_dz'>dz</span><span class='period'>.</span><span class='id identifier rubyid_size_x'>size_x</span><span class='rparen'>)</span><span class='rparen'>)</span>
+	<span class='kw'>end</span>
+	<span class='kw'>return</span> <span class='lbracket'>[</span><span class='id identifier rubyid_dw'>dw</span><span class='period'>.</span><span class='id identifier rubyid_reverse!'>reverse!</span><span class='comma'>,</span> <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_reverse!'>reverse!</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="dropOut-instance_method">
+  
+    #<strong>dropOut</strong>(layers, act)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/RbLearning/NeuroNet.rb', line 13</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_dropOut'>dropOut</span><span class='lparen'>(</span><span class='id identifier rubyid_layers'>layers</span><span class='comma'>,</span> <span class='id identifier rubyid_act'>act</span><span class='rparen'>)</span>
+	<span class='id identifier rubyid_r'>r</span> <span class='op'>=</span> <span class='const'>Random</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+	<span class='lparen'>(</span><span class='int'>0</span><span class='op'>...</span><span class='id identifier rubyid_layers'>layers</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_i'>i</span><span class='op'>|</span>
+		<span class='id identifier rubyid_drop_out'>drop_out</span> <span class='op'>=</span> <span class='int'>0</span>
+		<span class='id identifier rubyid_size'>size</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='id identifier rubyid_layers'>layers</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_dropOut'>dropOut</span> <span class='op'>/</span> <span class='int'>100</span><span class='rparen'>)</span> <span class='op'>*</span> <span class='id identifier rubyid_act'>act</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_size_y'>size_y</span> <span class='op'>*</span> <span class='id identifier rubyid_act'>act</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_size_x'>size_x</span>
+		<span class='kw'>while</span> <span class='id identifier rubyid_drop_out'>drop_out</span> <span class='op'>&lt;</span> <span class='id identifier rubyid_size'>size</span>
+			<span class='id identifier rubyid_y'>y</span> <span class='op'>=</span> <span class='id identifier rubyid_r'>r</span><span class='period'>.</span><span class='id identifier rubyid_rand'>rand</span><span class='lparen'>(</span><span class='int'>0</span><span class='op'>...</span><span class='id identifier rubyid_act'>act</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_size_y'>size_y</span><span class='rparen'>)</span>
+			<span class='id identifier rubyid_x'>x</span> <span class='op'>=</span> <span class='id identifier rubyid_r'>r</span><span class='period'>.</span><span class='id identifier rubyid_rand'>rand</span><span class='lparen'>(</span><span class='int'>0</span><span class='op'>...</span><span class='id identifier rubyid_act'>act</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_size_x'>size_x</span><span class='rparen'>)</span>
+			<span class='id identifier rubyid_act'>act</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='id identifier rubyid_y'>y</span><span class='comma'>,</span> <span class='id identifier rubyid_x'>x</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='int'>0</span>
+			<span class='id identifier rubyid_drop_out'>drop_out</span> <span class='op'>+=</span> <span class='int'>1</span>
+		<span class='kw'>end</span>
+	<span class='kw'>end</span>
+	<span class='kw'>return</span> <span class='id identifier rubyid_act'>act</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="feedForward-instance_method">
+  
+    #<strong>feedForward</strong>(layers, x)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/RbLearning/NeuroNet.rb', line 28</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_feedForward'>feedForward</span><span class='lparen'>(</span><span class='id identifier rubyid_layers'>layers</span><span class='comma'>,</span> <span class='id identifier rubyid_x'>x</span><span class='rparen'>)</span>
+	<span class='id identifier rubyid_act'>act</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_x'>x</span><span class='rbracket'>]</span>
+	<span class='id identifier rubyid_zs'>zs</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+	<span class='id identifier rubyid_layers'>layers</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_l'>l</span><span class='op'>|</span>
+		<span class='id identifier rubyid_x'>x</span> <span class='op'>=</span> <span class='id identifier rubyid_x'>x</span> <span class='op'>*</span> <span class='id identifier rubyid_l'>l</span><span class='period'>.</span><span class='id identifier rubyid_w'>w</span> <span class='op'>+</span> <span class='id identifier rubyid_l'>l</span><span class='period'>.</span><span class='id identifier rubyid_b'>b</span>
+		<span class='id identifier rubyid_zs'>zs</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span><span class='lparen'>(</span><span class='id identifier rubyid_x'>x</span><span class='rparen'>)</span>
+		<span class='id identifier rubyid_x'>x</span> <span class='op'>=</span> <span class='id identifier rubyid_send'>send</span><span class='lparen'>(</span><span class='id identifier rubyid_l'>l</span><span class='period'>.</span><span class='id identifier rubyid_actFunc'>actFunc</span><span class='comma'>,</span> <span class='id identifier rubyid_x'>x</span><span class='rparen'>)</span>
+		<span class='id identifier rubyid_act'>act</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span><span class='lparen'>(</span><span class='id identifier rubyid_x'>x</span><span class='rparen'>)</span>
+	<span class='kw'>end</span>
+	<span class='id identifier rubyid_act'>act</span> <span class='op'>=</span> <span class='id identifier rubyid_dropOut'>dropOut</span><span class='lparen'>(</span><span class='id identifier rubyid_layers'>layers</span><span class='comma'>,</span> <span class='id identifier rubyid_act'>act</span><span class='rparen'>)</span>
+	<span class='kw'>return</span> <span class='lbracket'>[</span><span class='id identifier rubyid_zs'>zs</span><span class='comma'>,</span> <span class='id identifier rubyid_act'>act</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="train-instance_method">
+  
+    #<strong>train</strong>(layers, x, y, printErr = false)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/RbLearning/NeuroNet.rb', line 58</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_train'>train</span><span class='lparen'>(</span><span class='id identifier rubyid_layers'>layers</span><span class='comma'>,</span> <span class='id identifier rubyid_x'>x</span><span class='comma'>,</span> <span class='id identifier rubyid_y'>y</span><span class='comma'>,</span> <span class='id identifier rubyid_printErr'>printErr</span> <span class='op'>=</span> <span class='kw'>false</span><span class='rparen'>)</span>
+	<span class='id identifier rubyid_zs'>zs</span><span class='comma'>,</span> <span class='id identifier rubyid_act'>act</span> <span class='op'>=</span> <span class='id identifier rubyid_feedForward'>feedForward</span><span class='lparen'>(</span><span class='id identifier rubyid_layers'>layers</span><span class='comma'>,</span> <span class='id identifier rubyid_x'>x</span><span class='rparen'>)</span>
+	<span class='id identifier rubyid_ws'>ws</span><span class='comma'>,</span> <span class='id identifier rubyid_bs'>bs</span> <span class='op'>=</span> <span class='id identifier rubyid_backPropagation'>backPropagation</span><span class='lparen'>(</span><span class='id identifier rubyid_zs'>zs</span><span class='comma'>,</span> <span class='id identifier rubyid_act'>act</span><span class='comma'>,</span> <span class='id identifier rubyid_y'>y</span><span class='comma'>,</span> <span class='id identifier rubyid_layers'>layers</span><span class='rparen'>)</span>
+	<span class='lparen'>(</span><span class='int'>0</span><span class='op'>...</span><span class='id identifier rubyid_layers'>layers</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_i'>i</span><span class='op'>|</span>
+		<span class='id identifier rubyid_layers'>layers</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_w'>w</span> <span class='op'>=</span> <span class='id identifier rubyid_ws'>ws</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span>
+		<span class='id identifier rubyid_layers'>layers</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_b'>b</span> <span class='op'>=</span> <span class='id identifier rubyid_bs'>bs</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span>
+	<span class='kw'>end</span>
+	<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Error: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_meanSqrtErr'>meanSqrtErr</span><span class='lparen'>(</span><span class='id identifier rubyid_act'>act</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='comma'>,</span> <span class='id identifier rubyid_y'>y</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_printErr'>printErr</span>
+	<span class='kw'>return</span> <span class='id identifier rubyid_layers'>layers</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Thu Mar 28 11:12:46 2019 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.18 (ruby-2.5.1).
+</div>
+
+    </div>
+  </body>
+</html>

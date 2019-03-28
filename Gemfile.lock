@@ -3,6 +3,7 @@ GEM
   specs:
     ffi (1.10.0)
     rake (12.3.2)
+    yard (0.9.18)
 
 PLATFORMS
   ruby
@@ -10,6 +11,7 @@ PLATFORMS
 DEPENDENCIES
   ffi
   rake
+  yard
 
 BUNDLED WITH
    1.17.2

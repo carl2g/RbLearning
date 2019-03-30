@@ -1,12 +1,13 @@
 require_relative './Statistics'
 require_relative './Utils'
+require 'csv'
 
 class DataManager
 
 	include Statistics
 	include Utils
 
-	private :hashed_data, :size_x, :size_y, :mat
+	attr_accessor :hashed_data, :size_x, :size_y, :mat
 
 	# Create DataManager Object
 	#
@@ -113,11 +114,10 @@ class DataManager
 	# Take a key (label)
 	#
 	# == Returns:
-	# New labels
+	# Removed data
 	#
 	def remove(label)
 		@hashed_data.delete(label)
-		return self.labels
 	end
 
 	# Replace a given lable with non numeric values by dumies variables
@@ -130,6 +130,7 @@ class DataManager
 	#
 	def addDumie(label)
 		values = self.remove(label)
+		exising_values = values.uniq
 		exising_values.each { |lab| @hashed_data[label + '_' + lab.to_s] = [] if !@hashed_data[lab] }
 		(0...@size_y).each do |i|
 			exising_values.each do |val|

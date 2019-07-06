@@ -1,13 +1,25 @@
 class NetLayer
 
-	attr_accessor :w, :b, :activFunc, :lrn, :dropOut
+	attr_accessor :w, :b, :activFunc, :lrn, :dropOut, :lrnOptimizer
 
-	def initialize(size_y, size_x, actFunc, lrn: 0.03, dropOut: 0.0, min: 0.0, max: 1.0)
+	def initialize(size_y, size_x, actFunc, lrn: 0.03, dropOut: 0.0, min: 0.0, max: 1.0, lrnOptimizer: nil)
 		@w = initWeights(size_y, size_x, min, max)
 		@b = initWeights(1, size_x, min, max)
 		@activFunc = actFunc
 		@lrn = lrn
 		@dropOut = dropOut
+		if lrnOptimizer
+			@lrnOptimizer = lrnOptimizer
+			@lrnOptimizer.setSize(size_y, size_x)
+		end
+	end
+
+	def optimize(dw, dz)
+		if @lrnOptimizer
+			@lrnOptimizer.optimize(dw, dz)
+		else
+			[dw, dz]
+		end
 	end
 
 	def initWeights(size_y, size_x = size_y, min = -1.0, max = 1.0)

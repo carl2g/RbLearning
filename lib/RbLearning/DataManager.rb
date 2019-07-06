@@ -60,7 +60,7 @@ class DataManager
 	# Matrix Object
 	#
 	def matrix
-		@mat = self.matrixGenerate if mat.nil?
+		@mat ||= self.matrixGenerate
 		return @mat
 	end
 
@@ -106,6 +106,14 @@ class DataManager
 		labels = labels.uniq.reject { |e| e.nil? }
 		labels.each { |label| self.addDumie(label) }
 		return self.labels
+	end
+
+	def keepLabels(labels)
+		my_labs = self.labels
+		rm_labs = my_labs - labels
+		rm_labs.each do |l|
+			remove(l)
+		end
 	end
 
 	# Remove label
@@ -240,11 +248,11 @@ class DataManager
 	# == Returns:
 	# 2 Matrix object representing the parameter x and the result y
 	#
-	def batch(data_y, size = 24)
-		r = Random.new
-		indexes = (0...size).map { r.rand(0...matrix.size_y) }
+	def batch(data_y, data_x: matrix, batch_size: 24)
+		Random.srand
+		indexes = (0...batch_size).map { Random.rand(0...data_x.size_y) }
 		batch_x = Matrix.set(indexes.map do |i|
-			matrix[i]
+			data_x[i]
 		end)
 		batch_y = Matrix.set(indexes.map do |i|
 			data_y[i]

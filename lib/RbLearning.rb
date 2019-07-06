@@ -5,6 +5,9 @@ require_relative './RbLearning/NeuroNet'
 require_relative './RbLearning/LossFunc'
 require_relative './RbLearning/DataManager'
 require_relative './RbLearning/NetLayer'
+require_relative './RbLearning/Cnn'
+require_relative './RbLearning/LrnOptimizer'
+require_relative './RbLearning/CostFunc'
 
 ############ Lib file ############
 require_relative './RbLearning/lib/MatrixLib'

@@ -59,18 +59,24 @@ class NeuroNet
 	def backPropagation(zs, act, y)
 		i = @layers.size - 1
 
-		# dz = crossEntropyCost(act[i + 1], y) ** @layers[i].activFunc.derivate(zs[i])
 		dz = costFunc(act[i + 1], y) ** @layers[i].activFunc.derivate(zs[i])
-		dw = [@layers[i].w - (act[i].transpose * dz.applyOp(:*, @layers[i].lrn / dz.size_x))]
-		db = [@layers[i].b - dz.sumOrd.transpose.applyOp(:*, @layers[i].lrn / dz.size_x)]
+		dw = (act[i].transpose * dz).applyOp(:*, @layers[i].lrn)
+		dwOpt, dbOpt = @layers[i].optimize(dw, dz.applyOp(:*, @layers[i].lrn))
+
+		w = [@layers[i].w - dwOpt]
+		b = [@layers[i].b - dz.sumOrd.transpose.applyOp(:*, @layers[i].lrn)]
 
 		(0...@layers.size - 1).reverse_each do |i|
 			tmp = dz * @layers[i + 1].w.transpose
 			dz = tmp ** @layers[i].activFunc.derivate(zs[i])
-			dw.push(@layers[i].w - (act[i].transpose * dz.applyOp(:*, @layers[i].lrn / dz.size_x)))
-			db.push(@layers[i].b - dz.sumOrd.transpose.applyOp(:*, @layers[i].lrn / dz.size_x))
+			dw = (act[i].transpose * dz).applyOp(:*, @layers[i].lrn)
+
+			dwOpt, dbOpt = @layers[i].optimize(dw, dz.applyOp(:*, @layers[i].lrn))
+			
+			w.push(@layers[i].w - dwOpt.applyOp(:*, @layers[i].lrn))
+			b.push(@layers[i].b - dz.sumOrd.transpose.applyOp(:*, @layers[i].lrn))
 		end
-		return [dw.reverse!, db.reverse!]
+		return [w.reverse!, b.reverse!]
 	end
 
 	def train(x, y)

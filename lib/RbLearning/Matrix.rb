@@ -38,6 +38,10 @@ class Matrix
 		end
 	end
 
+	def dimensions
+		[self.size_y, self.size_x]
+	end
+
 	def printShape
 		puts "size_y: #{self.size_y} size_x: #{self.size_x}"
 	end
@@ -63,7 +67,6 @@ class Matrix
 			end
 			puts
 		end
-		puts
 	end
 
 	def transpose
@@ -93,7 +96,7 @@ class Matrix
 	end
 
 	def +(matrix)
-		m = boardcasting(matrix, self.size_y, self.size_x)
+		m = Matrix.boardcasting(matrix, self.size_y, self.size_x)
 		vec1 = self.to_vect
 		ptr1 = FFI::MemoryPointer.new(:double, vec1.size)
 		ptr1.write_array_of_double(vec1)
@@ -108,7 +111,7 @@ class Matrix
 	end
 
 	def **(matrix)
-		m = boardcasting(matrix, self.size_y, self.size_x)
+		m = Matrix.boardcasting(matrix, self.size_y, self.size_x)
 		vec1 = self.to_vect
 		ptr1 = FFI::MemoryPointer.new(:double, vec1.size)
 		ptr1.write_array_of_double(vec1)
@@ -123,7 +126,7 @@ class Matrix
 	end
 
 	def -(matrix)
-		m = boardcasting(matrix, self.size_y, self.size_x)
+		m = Matrix.boardcasting(matrix, self.size_y, self.size_x)
 		vec1 = self.to_vect
 		ptr1 = FFI::MemoryPointer.new(:double, vec1.size)
 		ptr1.write_array_of_double(vec1)
@@ -163,36 +166,13 @@ class Matrix
 	end
 
 	def copy
-		Matrix.setVectorizedMatrix(self.to_vect)
-	end
-
-	def filter(filter, pos_y = 0, pos_x = 0, op = :* )
-		newM = self.copy
-		filter.matrix.each_with_index do |line, y|
-			line.each_with_index do |val, x|
-				newM[pos_y + y][pos_x + x] = newM[pos_y + y][pos_x + x].send(op, val) if newM[pos_y + y] && newM[pos_y + y][pos_x + x]
-			end
-		end
-		return newM
-	end
-
-	def self.filterAll(m, filter, op = :*)
-		filtered_m = Matrix.new(m.size_y, m.size_x)
-		(0...m.size_y).each do |y|
-			(0...m.size_x).each do |x|
-				tmp = m.filter(filter, y, x, op)
-				sum = tmp.sum(y, x, filter.size_y, filter.size_x)
-				filtered_m[y, x] = sum
-			end
-		end
-		return filtered_m
+		Matrix.setVectorizedMatrix(self.to_vect, self.size_y, self.size_x)
 	end
 
 	def applyOp(op, nb)
-		self.matrix.each_with_index do |val, i|
-			@matrix[i] = val.send(op, nb)
-		end
-		return self
+		Matrix.setVectorizedMatrix(self.matrix.each_with_index.map do |val, i|
+			val.send(op, nb)
+		end, self.size_y, self.size_x)
 	end
 
 	def set_if(set = 0, nb = 0, op = :<)
@@ -227,7 +207,7 @@ class Matrix
 		Matrix.set(
 		      (0...self.size_x).map do |x|
 		      	tmp = 0
-		      	(0...self.size_y).each do |y|
+		      	(0...self.size_y).sum do |y|
 		         		tmp += self[y, x]
 		           	end
 		           	[tmp]
@@ -265,15 +245,25 @@ class Matrix
 		return max
 	end
 
-	def normalize(norm)
-		self.matrix.each_with_index do |val, i|
-			@matrix[i] = val / norm
+	def normalize(norm = self.getMax, axis: nil)
+		norm = norm == 0 ? 1 : norm
+
+		if axis == 0
+			(0...self.size_y).each do |i|
+				max = self[i].max
+				max = max == 0 ? 1 : max
+				(0...self[i].size).each do |x|
+					self[i, x] = self[i, x] / max
+				end
+			end
+		else
+			self.matrix.each_with_index do |val, i|
+				@matrix[i] = val / norm
+			end
 		end
 	end
 
-private
-
-	def boardcasting(matrix, size_y, size_x)
+	def self.boardcasting(matrix, size_y, size_x)
 		Matrix.set(
 		      (0...size_y).map do |y|
 		      	(0...size_x).map do |x|

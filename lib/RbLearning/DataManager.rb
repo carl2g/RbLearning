@@ -1,5 +1,6 @@
 require_relative './Statistics'
 require_relative './Utils'
+require 'csv'
 
 class DataManager
 
@@ -8,6 +9,14 @@ class DataManager
 
 	attr_accessor :hashed_data, :size_x, :size_y, :mat
 
+	# Create DataManager Object
+	#
+	# == Parameters:
+	# Take a csv file
+	#
+	# == Returns:
+	# New DataManager Object
+	#
 	def initialize(csv_file)
 		content 		= CSV.read(csv_file)
 		@hashed_data 	= {}
@@ -22,6 +31,15 @@ class DataManager
 		@size_y = @hashed_data.first.last.size
 	end
 
+	# Generate a Matrix Object using DataManager Labels
+	#
+	# == Parameters:
+	# Take array of label witch will be used to generate a Matrix,
+	# by default all labels of DataManager Object is selected
+	#
+	# == Returns:
+	# Matrix Object
+	#
 	def matrixGenerate(with = self.labels)
 		newH = @hashed_data.select { |key, val| with.include?(key) }
 		size_y = @size_y
@@ -36,43 +54,49 @@ class DataManager
 		return m
 	end
 
+	# Return associated Matrix to DataManager Object
+	# else call self.matrixGenerate to generate one
+	# == Returns:
+	# Matrix Object
+	#
 	def matrix
 		@mat = self.matrixGenerate if mat.nil?
 		return @mat
 	end
 
+	# Get all values for a given label
+	#
+	# == Parameters:
+	# Take a key (label)
+	#
+	# == Returns:
+	# Array of value
+	#
 	def [](key)
 		@hashed_data[key]
 	end
 
+	# Set values for a given label
+	#
+	# == Parameters:
+	# Take a key (label) and a array of value
+	#
+	# == Returns:
+	# New Array of value
+	#
 	def []=(key, values)
 		@hashed_data[key] = values
 	end
 
-	def describe_labels(labels = self.labels)
-		labels.each do |label|
-			describe_label(label)
-		end
-	end
-
-	def describe_label(label)
-		sorted_datas = self[label].map {|val| val.to_f }
-		sorted_datas = sorted_datas.sort
-		puts "=" * 45
-		puts "\tName:\t\t#{label}"
-		puts "\tCount:\t\t#{sorted_datas.select { |val| val if val != 0 }.size }"
-		puts "\tMin:\t\t#{sorted_datas.first}"
-		puts "\tMean:\t\t#{self.mean(sorted_datas)}"
-		puts "\t25%:\t\t#{self.quarlite(sorted_datas, 1)}"
-		puts "\t50%:\t\t#{self.quarlite(sorted_datas, 2)}"
-		puts "\t75%:\t\t#{self.quarlite(sorted_datas, 3)}"
-		puts "\tMax:\t\t#{sorted_datas.last}"
-		puts "\tStandard dev:\t#{std_dev(sorted_datas)}"
-		puts "\tSkewness:\t#{skewness(sorted_datas)}"
-		puts "=" * 45
-	end
-
-	def addDumies(null_val = [])
+	# Replace lables with non numeric values by dumies variables
+	#
+	# == Parameters:
+	# Take a key (label)
+	#
+	# == Returns:
+	# New labels
+	#
+	def addDumies
 		labels = []
 		@hashed_data.each do |key, line|
 			labels += line.each_with_index.map do |val, i|
@@ -80,28 +104,53 @@ class DataManager
 			end
 		end
 		labels = labels.uniq.reject { |e| e.nil? }
-		labels.each { |label| self.addDumie(label, null_val) }
+		labels.each { |label| self.addDumie(label) }
+		return self.labels
 	end
 
+	# Remove label
+	#
+	# == Parameters:
+	# Take a key (label)
+	#
+	# == Returns:
+	# Removed data
+	#
 	def remove(label)
 		@hashed_data.delete(label)
 	end
 
-	def addDumie(label, null_val = [])
+	# Replace a given lable with non numeric values by dumies variables
+	#
+	# == Parameters:
+	# Take a key (label)
+	#
+	# == Returns:
+	# New labels
+	#
+	def addDumie(label)
 		values = self.remove(label)
-		exising_values = values.uniq.reject { |val| null_val.include?(val) }
+		exising_values = values.uniq
 		exising_values.each { |lab| @hashed_data[label + '_' + lab.to_s] = [] if !@hashed_data[lab] }
 		(0...@size_y).each do |i|
 			exising_values.each do |val|
 				 @hashed_data[label + '_' + val.to_s] << (values[i] == val ? 1 : 0)
 			end
 		end
+		return self.labels
 	end
 
+	# Get lables from dataManager
+	#
+	# == Returns:
+	# labels
+	#
 	def labels
 		@hashed_data.keys
 	end
 
+	# Normalize values, divide all values by the max value for a given label
+	#
 	def normalize
 		self.labels.each do |key|
 			self[key].map! { |e| e.to_f }
@@ -110,50 +159,96 @@ class DataManager
 			norm = max < min ? min : max
 			self[key].map! { |e| norm != 0 ? e / norm : e }
 		end
+		return nil
 	end
 
-	def removeRaws(rm)
+	# Remove rows having given value
+	#
+	# == Parameters:
+	# value to delete row
+	#
+	def removeRows(rm_val)
 		self.labels.each do |l|
-			removeRaw(l, rm)
+			removeRow(l, rm_val)
 		end
+		return nil
 	end
 
-	def removeRaw(key, rm)
+	# Remove rows having given value for a given label
+	#
+	# == Parameters:
+	# key (label)
+	# value to delete row
+	#
+	def removeRow(key, rm_val)
 		self[key].each_with_index.reverse_each do |val, i|
-			removeAt(i) if val == rm
+			removeAt(i) if val == rm_val
 		end
+		return nil
 	end
 
+	# Remove rows at a given index
+	#
+	# == Parameters:
+	# index to delete row
+	#
 	def removeAt(i)
 		self.labels.each do |l|
 			self[l].delete_at(i)
 		end
 		updateSizeInfo
+		return nil
 	end
 
+	# Remove labels having a given percent of given value for given labels
+	#
+	# == Parameters:
+	# percentage of given value
+	# value to apply function default: nil
+	# lebels to apply function default: self.labels
+	#
+	# == Returns:
+	# labels
+	#
 	def removeKeysNullVall(perc, val = nil, keys = self.labels)
 		keys.each do |key|
 			removeKeyNullVal(key, perc, val)
 		end
+		return self.labels
 	end
 
+	# Remove label having a given percent of given value for given labels
+	#
+	# == Parameters:
+	# percentage of given value
+	# value to apply function default: nil
+	# lebels to apply function default: self.labels
+	#
+	# == Returns:
+	# labels
+	#
 	def removeKeyNullVal(key, perc, val = nil)
 		self.remove(key) if self[key].count(val) >= (@size_y / 100.0) * perc
 	end
 
+	# Generate batch of given size from matrix used to train NeuralNet
+	#
+	# == Parameters:
+	# Expected result (for training)
+	# Size of batch default: 24
+	#
+	# == Returns:
+	# 2 Matrix object representing the parameter x and the result y
+	#
 	def batch(data_y, size = 24)
 		r = Random.new
-
 		indexes = (0...size).map { r.rand(0...matrix.size_y) }
-
 		batch_x = Matrix.set(indexes.map do |i|
 			matrix[i]
 		end)
-
 		batch_y = Matrix.set(indexes.map do |i|
 			data_y[i]
 		end)
-
 		return [batch_x, batch_y]
 	end
 

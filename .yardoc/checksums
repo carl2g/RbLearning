@@ -1,0 +1,11 @@
+lib/RbLearning.rb f9cc7c3570a98a9cb95ab7a56f37ce87b2d03e48
+lib/RbLearning/Utils.rb 8eab0e7bb5fc8fb97813bf244cae9125225420b4
+lib/RbLearning/Matrix.rb 5d9051fc8d7cb43771eb0ff6deaaccb2d50784f3
+lib/RbLearning/LossFunc.rb 52036403b09ed4031b4b84786ca5cf10dbb9e549
+lib/RbLearning/NetLayer.rb 5a752bdef83b02ae16bcb6d85e83d707fc1f828b
+lib/RbLearning/NeuroNet.rb bfd8025826b243486f86bcc3670b26da1fc456e3
+lib/RbLearning/ActivFunc.rb 3b0ebf85c553ddad10b214beb194d623d324f69a
+lib/RbLearning/Statistics.rb cfb2601ac2406bb1211ded1e9aa11549ea2c1fff
+lib/RbLearning/DataManager.rb 74bba262ef18306d4174354b0467c5a56b493b0a
+lib/RbLearning/DecisionTree.rb 13a9cd890673409ade55231c73bffd32d99afac6
+lib/RbLearning/lib/MatrixLib.rb 7742fed1573101aa18178473dd85f4aa18a3165e

@@ -4,7 +4,9 @@
 #include <unistd.h>
 #include "matrix_lib.h"
 
-__global__ void cuda_dot(const double *m1, const double *m2, int size_y, int size_v, int size_x, double *new_m) {
+__global__ void cuda_dot(double *m1, double *m2, int size_y, int size_v, int size_x, double *new_m) {
+	// double tmp = m1[(blockIdx.x * size_x) + threadIdx.y] * m2[(threadIdx.y * size_v) + threadIdx.x];
+	// new_m[(blockIdx.x * size_v) + threadIdx.x] += tmp;
 	double tmp = 0;
 	for (int x = 0; x < size_x; ++x) {
 		tmp += m1[(blockIdx.x * size_x) + x] * m2[(x * size_v) + threadIdx.x];
@@ -12,28 +14,36 @@ __global__ void cuda_dot(const double *m1, const double *m2, int size_y, int siz
 	new_m[(blockIdx.x * size_v) + threadIdx.x] = tmp;
 }
 
-__global__ void cuda_mult(const double *m1, const double *m2, double *new_m) {
+__global__ void cuda_mult(double *m1, double *m2, double *new_m) {
 	new_m[blockIdx.x] = m1[blockIdx.x] * m2[blockIdx.x];
 }
 
-__global__ void cuda_sub(const double *m1, const double *m2, double *new_m) {
+__global__ void cuda_sub(double *m1, double *m2, double *new_m) {
 	new_m[blockIdx.x] = m1[blockIdx.x] - m2[blockIdx.x];
 }
 
 
-__global__ void cuda_add(const double *m1, const double *m2, double *new_m) {
+__global__ void cuda_add(double *m1, double *m2, double *new_m) {
 	new_m[blockIdx.x] = m1[blockIdx.x] + m2[blockIdx.x];
 }
 
 extern "C" {
 
-	double *dot(const double *m1, const double *m2, int size_y, int size_v, int size_x) {
+	double *dot(double *m1, double *m2, int size_y, int size_v, int size_x) {
 		double *new_m 		= (double *)malloc((size_v * size_y) * sizeof(double));
 		double *cuda_new_m 	= NULL;
 		double *cuda_m1 		= NULL;
 		double *cuda_m2 		= NULL;
 
+		cudaDeviceSynchronize();
+		cudaError_t error = cudaGetLastError();
+		if (error != 0) {
+			fprintf(stderr,"ERROR: %s\n", cudaGetErrorString(error));
+			exit(1);
+		}
+
 		cudaMalloc((void**)&cuda_new_m, (size_y * size_v) * sizeof(double));
+		memset(new_m, 0, (size_y * size_v) * sizeof(double));
 		cudaMalloc((void**)&cuda_m1, (size_x * size_y) * sizeof(double));
 		cudaMalloc((void**)&cuda_m2, (size_x * size_v) * sizeof(double));
 
@@ -49,13 +59,14 @@ extern "C" {
 		return(new_m);
 	}
 
-	double *mult(const double *m1, const double *m2, int size) {
+	double *mult(double *m1, double *m2, int size) {
 		double *new_m 		= (double *)malloc((size) * sizeof(double));
 		double *cuda_new_m 	= NULL;
 		double *cuda_m1 		= NULL;
 		double *cuda_m2 		= NULL;
 
 		cudaMalloc((void**)&cuda_new_m, size * sizeof(double));
+		memset(new_m, 0, size * sizeof(double));
 		cudaMalloc((void**)&cuda_m1, size * sizeof(double));
 		cudaMalloc((void**)&cuda_m2, size * sizeof(double));
 
@@ -71,9 +82,10 @@ extern "C" {
 		return(new_m);
 	}
 
-	double *transpose(const double  *m, int size_y, int size_x)
+	double *transpose(double  *m, int size_y, int size_x)
 	{
 		double *new_m = (double *)malloc(sizeof(double) * (size_x * size_y));
+		memset(new_m, 0, size_x * size_y * sizeof(double));
 
 		for (int y = 0; y < size_y; ++y) {
 			for (int x = 0; x < size_x; ++x) {
@@ -83,13 +95,14 @@ extern "C" {
 		return (new_m);
 	}
 
-	double *subtract(const double *m1, const double *m2, int size) {
+	double *subtract(double *m1, double *m2, int size) {
 		double *new_m 		= (double *)malloc((size) * sizeof(double));
 		double *cuda_new_m 	= NULL;
 		double *cuda_m1 		= NULL;
 		double *cuda_m2 		= NULL;
 
 		cudaMalloc((void**)&cuda_new_m, size * sizeof(double));
+		memset(new_m, 0, size * sizeof(double));
 		cudaMalloc((void**)&cuda_m1, size * sizeof(double));
 		cudaMalloc((void**)&cuda_m2, size * sizeof(double));
 
@@ -105,13 +118,14 @@ extern "C" {
 		return(new_m);
 	}
 
-	double *add(const double *m1, const double *m2, int size) {
+	double *add(double *m1, double *m2, int size) {
 		double *new_m 		= (double *)malloc((size) * sizeof(double));
 		double *cuda_new_m 	= NULL;
 		double *cuda_m1 		= NULL;
 		double *cuda_m2 		= NULL;
 
 		cudaMalloc((void**)&cuda_new_m, size * sizeof(double));
+		memset(new_m, 0, size * sizeof(double));
 		cudaMalloc((void**)&cuda_m1, size * sizeof(double));
 		cudaMalloc((void**)&cuda_m2, size * sizeof(double));
 

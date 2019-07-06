@@ -1,15 +1,22 @@
 require_relative './ActivFunc'
 require_relative './LossFunc'
+require_relative './CostFunc'
 
 class NeuroNet
 
 	include ActivFunc
 	include LossFunc
+	include CostFunc
 
-	attr_accessor :layers
+	attr_accessor :layers, :lossFunc
 
 	def initialize
 		@layers = []
+		@lossFunc = LossFunc::MeanSqrtErr
+	end
+
+	def addLossFunc(func)
+		@lossFunc = func
 	end
 
 	def compile
@@ -52,6 +59,7 @@ class NeuroNet
 	def backPropagation(zs, act, y)
 		i = @layers.size - 1
 
+		# dz = crossEntropyCost(act[i + 1], y) ** @layers[i].activFunc.derivate(zs[i])
 		dz = costFunc(act[i + 1], y) ** @layers[i].activFunc.derivate(zs[i])
 		dw = [@layers[i].w - (act[i].transpose * dz.applyOp(:*, @layers[i].lrn / dz.size_x))]
 		db = [@layers[i].b - dz.sumOrd.transpose.applyOp(:*, @layers[i].lrn / dz.size_x)]
@@ -72,7 +80,7 @@ class NeuroNet
 			@layers[i].w = ws[i]
 			@layers[i].b = bs[i]
 		end
-		STDERR.puts "Error: #{meanSqrtErr(act.last, y)}"
+		STDERR.puts "Error: #{@lossFunc.func(act.last, y)}"
 		return @layers
 	end
 

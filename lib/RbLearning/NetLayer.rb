@@ -2,7 +2,7 @@ class NetLayer
 
 	attr_accessor :w, :b, :activFunc, :lrn, :dropOut
 
-	def initialize(size_y, size_x, actFunc, lrn, dropOut = 0, min = 1.0, max = 1.0)
+	def initialize(size_y, size_x, actFunc, lrn: 0.03, dropOut: 0.0, min: 0.0, max: 1.0)
 		@w = initWeights(size_y, size_x, min, max)
 		@b = initWeights(1, size_x, min, max)
 		@activFunc = actFunc

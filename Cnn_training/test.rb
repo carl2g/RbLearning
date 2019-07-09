@@ -6,21 +6,35 @@ include Utils
 include ActivFunc
 include LossFunc::CrossEntropy
 
-y = Matrix.set([
-	[1, 0, 0]
+
+data_x = Matrix.set([
+	[1, 1, 1],
+	[4, 3, 2],
+	[5, 3, 2]
 ])
 
-x = Matrix.set([
-	# [0.4, 0.3, 0.05, 0.05, 0.2]
-	[0.2698, 0.3223, 0.4078]
+data_y = Matrix.set([
+	[1],
+	[4],
+	[5]
 ])
 
-res = LossFunc::CrossEntropy.func(x, y)
+nn = NeuroNet.new
+nn.addLayer(NetLayer.new(data_x.size_x, 12, ActivFunc::ReLu, lrn: 0.0001, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.99)))
+nn.addLayer(NetLayer.new(12, 1, ActivFunc::ReLu, lrn: 0.0001, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.99)))
 
-res.printM(3)
-
-delt = LossFunc::CrossEntropy.derivate(x, y)
-
-delt.printM(3)
-
-ActivFunc::SoftMax.derivate(delt).printM(3)
+(0...5000).each do |ep|
+	# batch_x, batch_y = train.batch(data_y, data_x: data_x, batch_size: 32)
+	# it = 24
+	it = 240000
+	(0..it).each do |i|
+		batch_x, batch_y = data_x, data_y
+		layers = nn.train(batch_x, batch_y)
+		puts "epoch: #{ep} iteration: #{i}"
+		# break if nn.lastLoss < 1.0
+		zs, act = nn.feedForward(batch_x)
+		act.last.printM(4)
+		batch_y.printM
+		puts "=" * 30
+	end
+end

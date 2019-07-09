@@ -14,7 +14,8 @@ module LrnOptimizer
 
 		def optimize(dw, dz)
 			@dwOpt = @dwOpt.applyOp(:*, @beta) + dw.applyOp(:*, 1 - @beta)
-			@dbOpt = @dbOpt.applyOp(:*, @beta) + dz.applyOp(:*, 1 - @beta)
+			@dbOpt = dz
+			# @dbOpt = @dbOpt.applyOp(:*, @beta) + dz.applyOp(:*, 1 - @beta)
 			[@dwOpt, @dbOpt]
 		end
 	end

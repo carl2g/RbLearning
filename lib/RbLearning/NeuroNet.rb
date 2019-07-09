@@ -1,14 +1,12 @@
 require_relative './ActivFunc'
 require_relative './LossFunc'
-require_relative './CostFunc'
 
 class NeuroNet
 
 	include ActivFunc
 	include LossFunc
-	include CostFunc
 
-	attr_accessor :layers, :lossFunc
+	attr_accessor :layers, :lossFunc, :lastLoss
 
 	def initialize
 		@layers = []
@@ -46,7 +44,7 @@ class NeuroNet
 		act = [x]
 		zs = []
 		@layers.each do |l|
-			x.normalize(axis: 1)
+			x.normalize
 			x = x * l.w + l.b
 			zs.push(x)
 			x = l.activFunc.func(x)
@@ -59,22 +57,22 @@ class NeuroNet
 	def backPropagation(zs, act, y)
 		i = @layers.size - 1
 
-		dz = costFunc(act[i + 1], y) ** @layers[i].activFunc.derivate(zs[i])
+		dz =  @lossFunc.deriv(act[i + 1], y) ** @layers[i].activFunc.derivate(zs[i])
 		dw = (act[i].transpose * dz).applyOp(:*, @layers[i].lrn)
-		dwOpt, dbOpt = @layers[i].optimize(dw, dz.applyOp(:*, @layers[i].lrn))
+		dwOpt, dbOpt = @layers[i].optimize(dw, dz.applyOp(:*,  @layers[i].lrn /  dz.size_y))
 
 		w = [@layers[i].w - dwOpt]
-		b = [@layers[i].b - dz.sumOrd.transpose.applyOp(:*, @layers[i].lrn)]
+		b = [@layers[i].b - dbOpt.sumOrd.transpose]
 
 		(0...@layers.size - 1).reverse_each do |i|
+			
 			tmp = dz * @layers[i + 1].w.transpose
 			dz = tmp ** @layers[i].activFunc.derivate(zs[i])
 			dw = (act[i].transpose * dz).applyOp(:*, @layers[i].lrn)
-
-			dwOpt, dbOpt = @layers[i].optimize(dw, dz.applyOp(:*, @layers[i].lrn))
+			dwOpt, dbOpt = @layers[i].optimize(dw, dz.applyOp(:*, @layers[i].lrn / dz.size_y))
 			
-			w.push(@layers[i].w - dwOpt.applyOp(:*, @layers[i].lrn))
-			b.push(@layers[i].b - dz.sumOrd.transpose.applyOp(:*, @layers[i].lrn))
+			w.push(@layers[i].w - dwOpt)
+			b.push(@layers[i].b - dbOpt.sumOrd.transpose)
 		end
 		return [w.reverse!, b.reverse!]
 	end
@@ -86,7 +84,8 @@ class NeuroNet
 			@layers[i].w = ws[i]
 			@layers[i].b = bs[i]
 		end
-		STDERR.puts "Error: #{@lossFunc.func(act.last, y)}"
+		@lastLoss = @lossFunc.loss(act.last, y)
+		STDERR.puts "Error: #{@lastLoss}"
 		return @layers
 	end
 

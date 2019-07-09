@@ -194,11 +194,9 @@ class Matrix
 	def sumAxis
 		Matrix.set(
 		      (0...self.size_y).map do |y|
-		      	tmp = 0
-		           	(0...self.size_x).each do |x|
-		         		tmp += self[y, x]
-		           	end
-		           	[tmp]
+		           	[(0...self.size_x).sum do |x|
+		         		self[y, x]
+		           	end]
 		      end
 		)
 	end
@@ -206,11 +204,9 @@ class Matrix
 	def sumOrd
 		Matrix.set(
 		      (0...self.size_x).map do |x|
-		      	tmp = 0
-		      	(0...self.size_y).sum do |y|
-		         		tmp += self[y, x]
-		           	end
-		           	[tmp]
+		      	[(0...self.size_y).sum do |y|
+		         		self[y, x]
+		           	end]
 		      end
 		)
 	end
@@ -245,22 +241,27 @@ class Matrix
 		return max
 	end
 
-	def normalize(norm = self.getMax, axis: nil)
-		norm = norm == 0 ? 1 : norm
-
-		if axis == 0
-			(0...self.size_y).each do |i|
-				max = self[i].max
-				max = max == 0 ? 1 : max
-				(0...self[i].size).each do |x|
-					self[i, x] = self[i, x] / max
+	def normalize(axis: nil)
+		m = axis == 1 ? self.transpose : self
+		
+		if axis
+			(0...m.size_y).each do |i|
+				std_dev = Statistics::std_dev(m[i])
+				std_dev = std_dev == 0 ? 1 : std_dev
+				mean = Statistics::std_dev(m[i])
+				(0...m[i].size).each do |x|
+					m[i, x] = (m[i, x] - mean) / std_dev
 				end
 			end
 		else
+			min = m.matrix.min
+			max = m.matrix.max
+			delt = (max - min) == 0 ? 1 : (max - min)
 			self.matrix.each_with_index do |val, i|
-				@matrix[i] = val / norm
+				@matrix[i] = (val - min) / (max - min)
 			end
 		end
+		return axis == 1 ? m.transpose : m
 	end
 
 	def self.boardcasting(matrix, size_y, size_x)

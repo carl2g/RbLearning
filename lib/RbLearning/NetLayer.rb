@@ -22,6 +22,12 @@ class NetLayer
 		end
 	end
 
+	def reset
+		@w =  initWeights(@w.size_y, @w.size_x, min, max)
+		@b =  initWeights(@b.size_y, @b.size_x, min, max)
+		return [@w, @b]
+	end
+
 	def initWeights(size_y, size_x = size_y, min = -1.0, max = 1.0)
 		w = Matrix.new(size_y, size_x)
 		(0...size_y).each do |y|

@@ -248,14 +248,14 @@ class DataManager
 	# == Returns:
 	# 2 Matrix object representing the parameter x and the result y
 	#
-	def batch(data_y, data_x: matrix, batch_size: 24)
+	def batch(y: [], x: matrix, batch_size: 24)
 		Random.srand
-		indexes = (0...batch_size).map { Random.rand(0...data_x.size_y) }
+		indexes = (0...batch_size).map { Random.rand(0...x.size_y) }
 		batch_x = Matrix.set(indexes.map do |i|
-			data_x[i]
+			x[i]
 		end)
 		batch_y = Matrix.set(indexes.map do |i|
-			data_y[i]
+			y[i]
 		end)
 		return [batch_x, batch_y]
 	end

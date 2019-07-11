@@ -49,7 +49,7 @@ extern "C" {
 
 		cudaMemcpy(cuda_m1, m1, (size_x * size_y) * sizeof(double), cudaMemcpyHostToDevice);
 		cudaMemcpy(cuda_m2, m2, (size_x * size_v) * sizeof(double), cudaMemcpyHostToDevice);
-
+		
 		cuda_dot<<<size_y, size_v>>>(cuda_m1, cuda_m2, size_y, size_v, size_x, cuda_new_m);
 		cudaMemcpy(new_m, cuda_new_m, (size_y * size_v) * sizeof(double), cudaMemcpyDeviceToHost);
 
@@ -62,8 +62,8 @@ extern "C" {
 	double *mult(double *m1, double *m2, int size) {
 		double *new_m 		= (double *)malloc((size) * sizeof(double));
 		double *cuda_new_m 	= NULL;
-		double *cuda_m1 		= NULL;
-		double *cuda_m2 		= NULL;
+		double *cuda_m1 	= NULL;
+		double *cuda_m2 	= NULL;
 
 		cudaMalloc((void**)&cuda_new_m, size * sizeof(double));
 		memset(new_m, 0, size * sizeof(double));
@@ -108,7 +108,7 @@ extern "C" {
 
 		cudaMemcpy(cuda_m1, m1, (size) * sizeof(double), cudaMemcpyHostToDevice);
 		cudaMemcpy(cuda_m2, m2, (size) * sizeof(double), cudaMemcpyHostToDevice);
-
+		
 		cuda_sub<<<size, 1>>>(cuda_m1, cuda_m2, cuda_new_m);
 		cudaMemcpy(new_m, cuda_new_m, size * sizeof(double), cudaMemcpyDeviceToHost);
 

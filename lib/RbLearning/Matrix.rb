@@ -246,19 +246,20 @@ class Matrix
 		
 		if axis
 			(0...m.size_y).each do |i|
-				std_dev = Statistics::std_dev(m[i])
-				std_dev = std_dev == 0 ? 1 : std_dev
-				mean = Statistics::std_dev(m[i])
+				min = m[i].min
+				max = m[i].max
+				delt = (max - min) == 0 ? 1 : (max - min)
 				(0...m[i].size).each do |x|
-					m[i, x] = (m[i, x] - mean) / std_dev
+					m[i, x] = (m[i, x] - min) / delt
 				end
 			end
 		else
 			min = m.matrix.min
 			max = m.matrix.max
 			delt = (max - min) == 0 ? 1 : (max - min)
-			self.matrix.each_with_index do |val, i|
-				@matrix[i] = (val - min) / (max - min)
+			m.matrix.each_with_index do |val, i|
+				m.matrix[i] = (val - min) / delt
+
 			end
 		end
 		return axis == 1 ? m.transpose : m

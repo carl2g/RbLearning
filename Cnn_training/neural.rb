@@ -17,27 +17,28 @@ data_y = Matrix.set(data_y.map do |i|
 	tmp
 end)
 
-nn.addLayer(NetLayer.new(data_x.size_x, 64, ActivFunc::ReLu, lrn: 0.0001, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.9)))
-nn.addLayer(NetLayer.new(64, 10, ActivFunc::SoftMax, lrn: 0.0001, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.9)))
+nn.addLayer(NetLayer.new(64, data_x.size_x, ActivFunc::ReLu, lrn: 0.03, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.9)))
+nn.addLayer(NetLayer.new(10, 64, ActivFunc::SoftMax, lrn: 0.03, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.9)))
+# nn.addLayer(NetLayer.new(data_x.size_x, 10, ActivFunc::SoftMax, lrn: 0.003))
 nn.addLossFunc(LossFunc::CrossEntropy)
 
 (0...300).each do |ep|
-	batch_x, batch_y = train.batch(data_y, data_x: data_x, batch_size: 3)
+	batch_x, batch_y = train.batch(y: data_y, x: data_x, batch_size: 6)
+	batch_x, batch_y = batch_x.transpose, batch_y.transpose
 	it = 24000
 	# it = 64
 	(0..it).each do |i|
 		# batch_x, batch_y = data_x, data_y
 		layers = nn.train(batch_x, batch_y)
 		puts "epoch: #{ep} iteration: #{i}"
-		# break if nn.lastLoss < 1.0
 		zs, act = nn.feedForward(batch_x)
-		act.last.printM(4)
-		batch_y.printM
+		act.last.transpose.printM(4)
+		batch_y.transpose.printM
 		puts "=" * 30
 	end
 end
 
-(0...400).each do |ep|
+(0...1000).each do |ep|
 	batch_x, batch_y = train.batch(data_y, data_x: data_x, batch_size: 32)
 	# it = 24
 	it = 1

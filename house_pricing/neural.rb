@@ -20,12 +20,12 @@ tests.keepLabels(train.labels)
 
 nn = NeuroNet.new
 
-data_x = train.matrix
+data_x = train.matrix.normalize(axis: 1)
 data_y = Matrix.setVectorizedMatrix(data_y, data_y.size, 1)
 
-nn.addLayer(NetLayer.new(64, data_x.size_x, ActivFunc::ReLu, lrn: 0.001, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.9)))
-nn.addLayer(NetLayer.new(1, 64, ActivFunc::ReLu, lrn: 0.001, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.9)))
-# nn.addLayer(NetLayer.new(1, 32, ActivFunc::ReLu, lrn: 0.001, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.9)))
+# nn.addLayer(NetLayer.new(128, data_x.size_x, ActivFunc::ReLu, lrn: 0.00001, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.9)))
+nn.addLayer(NetLayer.new(128, data_x.size_x, ActivFunc::ReLu, lrn: 0.00000003, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.9)))
+nn.addLayer(NetLayer.new(1, 128, ActivFunc::ReLu, lrn: 0.00000003, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.9)))
 
 (0...2500).each do |ep|
 	batch_x, batch_y = train.batch(y: data_y, x: data_x, batch_size: 32)

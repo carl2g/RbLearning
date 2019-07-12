@@ -73,6 +73,7 @@ module ActivFunc
 
 	module SoftMax
 		def self.func(m)
+			m.normalize
 			Matrix.set((0...m.size_y).map do |y|
 				sum = 0.0
 				max = m[y].max
@@ -86,6 +87,7 @@ module ActivFunc
 		end
 
 		def self.derivate(m)
+			
 			Matrix.set((0...m.size_y).map do |y|
 				max = m[y].max
 				sum = (0...m.size_x).sum do |i|

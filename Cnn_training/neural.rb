@@ -10,7 +10,7 @@ data_y = train.remove('label')
 
 nn = NeuroNet.new
 
-data_x = train.matrix
+data_x = train.matrix.normalize(axis: 1)
 data_y = Matrix.set(data_y.map do |i|
 	tmp = [0] * 10
 	tmp[i.to_i] = 1
@@ -20,7 +20,7 @@ end)
 nn.addLayer(NetLayer.new(64, data_x.size_x, ActivFunc::ReLu, lrn: 0.03, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.9)))
 nn.addLayer(NetLayer.new(10, 64, ActivFunc::SoftMax, lrn: 0.03, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.9)))
 # nn.addLayer(NetLayer.new(data_x.size_x, 10, ActivFunc::SoftMax, lrn: 0.003))
-nn.addLossFunc(LossFunc::CrossEntropy)
+# nn.addLossFunc(LossFunc::CrossEntropy)
 
 (0...300).each do |ep|
 	batch_x, batch_y = train.batch(y: data_y, x: data_x, batch_size: 6)

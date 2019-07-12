@@ -44,7 +44,6 @@ class NeuroNet
 		act = [x]
 		zs = []
 		@layers.each do |l|
-			x.normalize
 			x = l.w * x + l.b
 			zs.push(x)
 			x = l.activFunc.func(x)
@@ -61,34 +60,18 @@ class NeuroNet
 		dw = (dz * act[i].transpose).applyOp(:*, @layers[i].lrn / dz.size_x)
 		dwOpt, dbOpt = @layers[i].optimize(dw, dz.applyOp(:*,  @layers[i].lrn /  dz.size_x))
 
-		# dw.printShape
-		# @layers[i].w.printShape
-		# dz.printShape
-		# dbOpt.printShape
-		# exit
 		w = [@layers[i].w - dwOpt]
 		b = [@layers[i].b - dbOpt.sumAxis]
 
 		(0...@layers.size - 1).reverse_each do |i|
 			
-			# puts "============== WANTED ========="
-			# @layers[i].w.printShape
-			# puts "============== HAVE ========="
-			# @layers[i + 1].w.printShape
-			# dz.printShape
-
 			tmp = @layers[i + 1].w.transpose * dz 
-			
-			# tmp.printShape
-			# act[i].printShape
-			
+
 			dz = tmp ** @layers[i].activFunc.derivate(zs[i])
 			dw = (dz * act[i].transpose).applyOp(:*, @layers[i].lrn / dz.size_x)
 			dwOpt, dbOpt = @layers[i].optimize(dw, dz.applyOp(:*, @layers[i].lrn / dz.size_x))
 			
 			w.push(@layers[i].w - dwOpt)
-			# @layers[i].b.printShape
-			# dbOpt.sumAxis.printShape
 			b.push(@layers[i].b - dbOpt.sumAxis)
 		end
 		return [w.reverse!, b.reverse!]

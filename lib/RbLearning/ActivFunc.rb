@@ -9,7 +9,7 @@ module ActivFunc
 				m.size_y,
 				m.size_x
 			)
-		end
+		end 
 
 		def self.derivate(m)
 			Matrix.setVectorizedMatrix(
@@ -73,30 +73,32 @@ module ActivFunc
 
 	module SoftMax
 		def self.func(m)
-			m.normalize
-			Matrix.set((0...m.size_y).map do |y|
+			# m = m.normalize
+			m = m.transpose
+			m = Matrix.set((0...m.size_y).map do |y|
 				sum = 0.0
-				max = m[y].max
 				out = (0...m.size_x).map do |x|
-					tmp = CMath.exp(m[y, x] - max)
+					tmp = CMath.exp(m[y, x])
 					sum += tmp
 					tmp
 				end
 				out.map { |val| (val / sum) }
 			end)
+			return m.transpose
 		end
 
 		def self.derivate(m)
-			
-			Matrix.set((0...m.size_y).map do |y|
-				max = m[y].max
-				sum = (0...m.size_x).sum do |i|
-					CMath.exp(m[y, i] - max)
+			m = m.transpose
+			m = Matrix.set((0...m.size_y).map do |y|
+				sum = (0...m.size_x).sum do |x|
+					CMath.exp(m[y, x])
 				end
 				(0...m.size_x).map do |x|
-					(CMath.exp(m[y, x] - max) / sum) * (1.0 - (CMath.exp(m[y, x] - max) / sum))
+					(CMath.exp(m[y, x]) / sum) * (1.0 - (CMath.exp(m[y, x]) / sum))
 				end
 			end)
+
+			return m.transpose
 		end
 	end
 

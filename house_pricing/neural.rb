@@ -23,12 +23,11 @@ nn = NeuroNet.new
 data_x = train.matrix.normalize(axis: 1)
 data_y = Matrix.setVectorizedMatrix(data_y, data_y.size, 1)
 
-# nn.addLayer(NetLayer.new(128, data_x.size_x, ActivFunc::ReLu, lrn: 0.00001, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.9)))
-nn.addLayer(NetLayer.new(128, data_x.size_x, ActivFunc::ReLu, lrn: 0.00000003, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.9)))
-nn.addLayer(NetLayer.new(1, 128, ActivFunc::ReLu, lrn: 0.00000003, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.9)))
+nn.addLayer(NetLayer.new(64, data_x.size_x, ActivFunc::ReLu, lrn: 0.000001, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.95)))
+nn.addLayer(NetLayer.new(1, 64, ActivFunc::ReLu, lrn: 0.000001, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.95)))
 
-(0...2500).each do |ep|
-	batch_x, batch_y = train.batch(y: data_y, x: data_x, batch_size: 32)
+(0...1500).each do |ep|
+	batch_x, batch_y = train.batch(y: data_y, x: data_x, batch_size: 24)
 	batch_x, batch_y = batch_x.transpose, batch_y.transpose
 	it = 64
 	(0..it).each do |i|
@@ -43,10 +42,7 @@ nn.addLayer(NetLayer.new(1, 128, ActivFunc::ReLu, lrn: 0.00000003, lrnOptimizer:
 	end
 end
 
-it = 500
-data_x = Matrix.set((0...800).map { |i| data_x[i] })
-data_y = Matrix.set((0...800).map { |i| data_y[i] })
-
+it = 1000
 (0..it).each do |i|
 	batch_x, batch_y = data_x.transpose, data_y.transpose
 	nn.train(batch_x, batch_y)
@@ -54,12 +50,12 @@ end
 
 data_x = tests.matrix
 
-zs, pred = nn.feedForward(data_x)
+zs, pred = nn.feedForward(data_x.transpose)
 
 CSV.open("./res.csv", "wb") do |csv|
 	csv << ['Id', 'SalePrice']
-	m = pred.last
-	(0...pred.last.size_y).each do |i|
+	m = pred.last.transpose
+	(0...m.size_y).each do |i|
 		csv <<  [1461 + i, m[i][0]]
 	end
 end

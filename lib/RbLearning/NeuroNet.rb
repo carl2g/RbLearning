@@ -58,7 +58,7 @@ class NeuroNet
 
 		dz =  @lossFunc.deriv(act[i + 1], y) ** @layers[i].activFunc.derivate(zs[i])
 		dw = (dz * act[i].transpose).applyOp(:*, @layers[i].lrn / dz.size_x)
-		dwOpt, dbOpt = @layers[i].optimize(dw, dz.applyOp(:*,  @layers[i].lrn /  dz.size_x))
+		dwOpt, dbOpt = @layers[i].optimize(dw, dz.applyOp(:*,  @layers[i].lrn / dz.size_x))
 
 		w = [@layers[i].w - dwOpt]
 		b = [@layers[i].b - dbOpt.sumAxis]

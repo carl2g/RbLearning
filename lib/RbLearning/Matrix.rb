@@ -232,10 +232,10 @@ class Matrix
 	end
 
 	def getMax(beg_y = 0, beg_x = 0, size_y = self.size_y, size_x = self.size_x)
-		max = self[0][0]
+		max = self[beg_y, beg_x]
 		(beg_y...beg_y + size_y).each do |y|
-			(beg_x..beg_x + size_x).each do |x|
-				max = self[y, x] if self[y] && self[y, x] && self[y, x] > max
+			(beg_x...beg_x + size_x).each do |x|
+				max = max < self[y, x] ? self[y, x] : max
 			end
 		end
 		return max
@@ -254,12 +254,14 @@ class Matrix
 				end
 			end
 		else
+			# std_dev = std_dev(m.matrix)
+			# mean = mean(m.matrix)
 			min = m.matrix.min
 			max = m.matrix.max
 			delt = (max - min) == 0 ? 1 : (max - min)
 			m.matrix.each_with_index do |val, i|
 				m.matrix[i] = (val - min) / delt
-
+				# m.matrix[i] = (val - mean) / std_dev
 			end
 		end
 		return axis == 1 ? m.transpose : m

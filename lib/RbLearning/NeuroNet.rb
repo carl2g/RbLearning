@@ -57,22 +57,21 @@ class NeuroNet
 		i = @layers.size - 1
 
 		dz =  @lossFunc.deriv(act[i + 1], y) ** @layers[i].activFunc.derivate(zs[i])
-		dw = (dz * act[i].transpose).applyOp(:*, @layers[i].lrn / dz.size_x)
-		dwOpt, dbOpt = @layers[i].optimize(dw, dz.applyOp(:*,  @layers[i].lrn / dz.size_x))
+		dw = dz * act[i].transpose
+		dwOpt, dbOpt = @layers[i].optimize(dw, dz)
 
-		w = [@layers[i].w - dwOpt]
-		b = [@layers[i].b - dbOpt.sumAxis]
+		w = [@layers[i].w - dwOpt.applyOp(:*, @layers[i].lrn / dz.size_x)]
+		b = [@layers[i].b - dbOpt.sumAxis.applyOp(:*, @layers[i].lrn / dz.size_x)]
 
 		(0...@layers.size - 1).reverse_each do |i|
 			
-			tmp = @layers[i + 1].w.transpose * dz 
-
+			tmp = @layers[i + 1].w.transpose * dz
 			dz = tmp ** @layers[i].activFunc.derivate(zs[i])
-			dw = (dz * act[i].transpose).applyOp(:*, @layers[i].lrn / dz.size_x)
-			dwOpt, dbOpt = @layers[i].optimize(dw, dz.applyOp(:*, @layers[i].lrn / dz.size_x))
+			dw = dz * act[i].transpose
+			dwOpt, dbOpt = @layers[i].optimize(dw, dz)
 			
-			w.push(@layers[i].w - dwOpt)
-			b.push(@layers[i].b - dbOpt.sumAxis)
+			w.push(@layers[i].w - dwOpt.applyOp(:*, @layers[i].lrn / dz.size_x))
+			b.push(@layers[i].b - dbOpt.sumAxis.applyOp(:*, @layers[i].lrn / dz.size_x))
 		end
 		return [w.reverse!, b.reverse!]
 	end

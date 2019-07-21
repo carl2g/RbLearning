@@ -22,13 +22,34 @@ module ActivFunc
 		end
 	end
 
+	module LeakyReLu
+		def self.func(m)
+			Matrix.setVectorizedMatrix(
+			      m.matrix.map do |x|
+			      	x > 0 ? x : Math.exp(x) - 1
+				end,
+				m.size_y,
+				m.size_x
+			)
+		end 
+
+		def self.derivate(m)
+			Matrix.setVectorizedMatrix(
+			      m.matrix.map do |x|
+			      	x > 0 ? 1.0 : Math.exp(x)
+				end,
+				m.size_y,
+				m.size_x
+			)
+		end
+	end
+
 	module Sigmoid
 		def self.sigmoidUnit(x)
 			1.0 / (1.0 + CMath.exp(-x))
 		end
 
 		def self.func(m)
-			m.printM
 			Matrix.setVectorizedMatrix(
 			      m.matrix.map do |x|
 					sigmoidUnit(x)
@@ -73,31 +94,29 @@ module ActivFunc
 
 	module SoftMax
 		def self.func(m)
-			# m = m.normalize
-			m = m.transpose
-			m = Matrix.set((0...m.size_y).map do |y|
+			m = Matrix.set((0...m.size_x).map do |x|
 				sum = 0.0
-				out = (0...m.size_x).map do |x|
-					tmp = CMath.exp(m[y, x])
+				max = m.getMax(0, x, m.size_y, 1)
+				out = (0...m.size_y).map do |y|
+					tmp = CMath.exp(m[y, x].abs - max) + EPSYLON
 					sum += tmp
 					tmp
 				end
-				out.map { |val| (val / sum) }
+				out.map { |val| val / sum }
 			end)
 			return m.transpose
 		end
 
 		def self.derivate(m)
-			m = m.transpose
-			m = Matrix.set((0...m.size_y).map do |y|
-				sum = (0...m.size_x).sum do |x|
-					CMath.exp(m[y, x])
+			m = Matrix.set((0...m.size_x).map do |x|
+				max = m.getMax(0, x, m.size_y, 1)
+				sum = (0...m.size_y).sum do |y|
+					CMath.exp(m[y, x] - max) + EPSYLON
 				end
-				(0...m.size_x).map do |x|
-					(CMath.exp(m[y, x]) / sum) * (1.0 - (CMath.exp(m[y, x]) / sum))
+				(0...m.size_y).map do |y|
+					((CMath.exp(m[y, x] - max) + EPSYLON) / sum) * (1.0 - ((CMath.exp(m[y, x] - max) + EPSYLON) / sum))
 				end
 			end)
-
 			return m.transpose
 		end
 	end

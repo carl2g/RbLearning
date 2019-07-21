@@ -2,9 +2,9 @@ class NetLayer
 
 	attr_accessor :w, :b, :activFunc, :lrn, :dropOut, :lrnOptimizer
 
-	def initialize(size_y, size_x, actFunc, lrn: 0.03, dropOut: 0.0, min: 0.5, max: 0.5, lrnOptimizer: nil)
+	def initialize(size_y, size_x, actFunc, lrn: 0.03, dropOut: 0.0, min: -0.1, max: 0.1, lrnOptimizer: nil)
 		@w = initWeights(size_y, size_x, min, max)
-		@b = initWeights(size_y, 1, min, max)
+		@b = initWeights(size_y, 1, 0.0, 0.0)
 		@activFunc = actFunc
 		@lrn = lrn
 		@dropOut = dropOut

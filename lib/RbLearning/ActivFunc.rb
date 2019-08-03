@@ -1,6 +1,6 @@
 module ActivFunc
 
-	module ReLu
+	class ReLu
 		def self.func(m)
 			Matrix.setVectorizedMatrix(
 			      m.matrix.map do |x|
@@ -22,7 +22,7 @@ module ActivFunc
 		end
 	end
 
-	module LeakyReLu
+	class LeakyReLu
 		def self.func(m)
 			Matrix.setVectorizedMatrix(
 			      m.matrix.map do |x|
@@ -44,7 +44,7 @@ module ActivFunc
 		end
 	end
 
-	module Sigmoid
+	class Sigmoid
 		def self.sigmoidUnit(x)
 			1.0 / (1.0 + CMath.exp(-x))
 		end
@@ -70,7 +70,7 @@ module ActivFunc
 		end
 	end
 
-	module Tanh
+	class Tanh
 		def self.func(m)
 			Matrix.setVectorizedMatrix(
 			      m.matrix.map do |x|
@@ -92,7 +92,7 @@ module ActivFunc
 		end
 	end
 
-	module SoftMax
+	class SoftMax
 		def self.func(m)
 			m = Matrix.set((0...m.size_x).map do |x|
 				sum = 0.0
@@ -122,7 +122,7 @@ module ActivFunc
 	end
 
 
-	# module HardMax
+	# class HardMax
 	# 	def self.func(m)
 	# 		Matrix.set((0...m.size_y).map do |y|
 	# 			ind_max = m[y].each_with_index.max[1]

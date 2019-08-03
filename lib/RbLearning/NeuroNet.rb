@@ -8,9 +8,9 @@ class NeuroNet
 
 	attr_accessor :layers, :lossFunc, :lastLoss
 
-	def initialize
+	def initialize(lossFunction: LossFunc::MeanSqrtErr)
 		@layers = []
-		@lossFunc = LossFunc::MeanSqrtErr
+		@lossFunc = lossFunction
 	end
 
 	def addLossFunc(func)
@@ -27,36 +27,38 @@ class NeuroNet
 		@layers << newLayer
 	end
 
-	def dropOut(act)
-		r = Random.new
-		(0...@layers.size).each do |i|
-			size = ((@layers[i].dropOut / 100) * act[i].size_y * act[i].size_x).round
-			(0...size).each do |drop_count| 
-				y = r.rand(0...act[i].size_y)
-				x = r.rand(0...act[i].size_x)
-				act[i][y, x] = 0
-			end
-		end
-		return act
+	def addLayers(layers)
+		@layers = layers
 	end
 
 	def feedForward(x)
 		act = [x]
 		zs = []
 		@layers.each do |l|
-			x = l.w * x + l.b
+			w = l.regularizeForward(l.w)
+			x = w * x + l.b
 			zs.push(x)
 			x = l.activFunc.func(x)
 			act.push(x)
 		end
-		act = dropOut(act)
 		return [zs, act]
+	end
+
+	def predict(x)
+		res = nil
+		@layers.each do |l|
+			x = l.w * x + l.b
+			x = l.activFunc.func(x)
+			res = x
+		end
+		return res
 	end
 
 	def backPropagation(zs, act, y)
 		i = @layers.size - 1
 
-		dz =  @lossFunc.deriv(act[i + 1], y) ** @layers[i].activFunc.derivate(zs[i])
+		regularize = @layers[i].regularizeBackward(@lossFunc.deriv(act[i + 1], y), @layers[i].w)
+		dz = regularize ** @layers[i].activFunc.derivate(zs[i])
 		dw = dz * act[i].transpose
 		dwOpt, dbOpt = @layers[i].optimize(dw, dz)
 
@@ -66,7 +68,8 @@ class NeuroNet
 		(0...@layers.size - 1).reverse_each do |i|
 			
 			tmp = @layers[i + 1].w.transpose * dz
-			dz = tmp ** @layers[i].activFunc.derivate(zs[i])
+			regularize = @layers[i].regularizeBackward(tmp, @layers[i].w)
+			dz = regularize ** @layers[i].activFunc.derivate(zs[i])
 			dw = dz * act[i].transpose
 			dwOpt, dbOpt = @layers[i].optimize(dw, dz)
 			
@@ -83,8 +86,11 @@ class NeuroNet
 			@layers[i].w = ws[i]
 			@layers[i].b = bs[i]
 		end
-		@lastLoss = @lossFunc.loss(act.last, y)
+		
+		pred = predict(x)
+		@lastLoss = @lossFunc.loss(pred, y)
 		STDERR.puts "Error: #{@lastLoss}"
+
 		return @layers
 	end
 

@@ -3,7 +3,7 @@ module LrnOptimizer
 	class Momentum
 		attr_accessor :dwOpt, :dbOpt, :beta
 
-		def initialize(beta: 0.9)
+		def initialize(beta: 0.0)
 			@beta = beta
 		end
 

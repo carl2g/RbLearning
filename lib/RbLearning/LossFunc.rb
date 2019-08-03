@@ -65,7 +65,7 @@ module LossFunc
 			m = Matrix.set((0...pred.size_x).map do |x|
 				(0...pred.size_y).map do |y|
 					if res[y, x] == 1.0
-						-1.0 / pred[y, x]
+						-1.0 / (pred[y, x])
 					else
 						1.0 / (1.0 - pred[y, x])
 					end

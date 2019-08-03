@@ -7,7 +7,7 @@ class Matrix
 	def initialize(size_y = 0, size_x = size_y, val = 0)
 		@size_x = size_x
 		@size_y = size_y
-		@matrix = Array.new(@size_y *  @size_x) { |i| val }
+		@matrix = Array.new(size_y * size_x) { |i| val }
 	end
 
 	def get2DArr
@@ -46,9 +46,7 @@ class Matrix
 		puts "size_y: #{self.size_y} size_x: #{self.size_x}"
 	end
 
-	def self.set(arr)
-		size_y = arr.size
-		size_x = arr.first.size
+	def self.set(arr, size_y: arr.size, size_x: arr.first.size)
 		Matrix.setVectorizedMatrix(arr.flatten, size_y, size_x)
 	end
 

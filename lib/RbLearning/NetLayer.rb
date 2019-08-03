@@ -1,25 +1,45 @@
 class NetLayer
 
-	attr_accessor :w, :b, :activFunc, :lrn, :dropOut, :lrnOptimizer
+	attr_accessor :w, :b, :activFunc, :lrn, :dropOut, :lrnOptimizer, :regularizer
 
-	def initialize(size_y, size_x, actFunc, lrn: 0.03, dropOut: 0.0, min: -0.1, max: 0.1, lrnOptimizer: nil)
+	def initialize(
+			size_y, 
+			size_x, 
+			actFunc, 
+			lrn: 0.03, 
+			dropOut: 0.0, 
+			min: -0.001, 
+			max: 0.001, 
+			lrnOptimizer: LrnOptimizer::Momentum.new, 
+			regularizer: Regularizer::L2.new
+		)
+
 		@w = initWeights(size_y, size_x, min, max)
 		@b = initWeights(size_y, 1, 0.0, 0.0)
 		@activFunc = actFunc
 		@lrn = lrn
 		@dropOut = dropOut
-		if lrnOptimizer
-			@lrnOptimizer = lrnOptimizer
-			@lrnOptimizer.setSize(size_y, size_x)
-		end
+		
+		@lrnOptimizer = lrnOptimizer
+		@lrnOptimizer.setSize(size_y, size_x)
+
+		@regularizer = regularizer
 	end
 
 	def optimize(dw, dz)
-		if @lrnOptimizer
-			@lrnOptimizer.optimize(dw, dz)
+		if @lrnOptimizer.beta == 0.0
+			return [dw, dz]
 		else
-			[dw, dz]
+			return @lrnOptimizer.optimize(dw, dz)
 		end
+	end
+
+	def regularizeForward(w)
+		return @regularizer.regularizeForward(w)
+	end
+
+	def regularizeBackward(dw, w)
+		return @regularizer.regularizeBackward(dw, w)
 	end
 
 	def reset

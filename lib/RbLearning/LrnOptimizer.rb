@@ -9,7 +9,7 @@ module LrnOptimizer
 
 		def setSize(size_y, size_x)
 			@dwOpt = Matrix.new(size_y, size_x)
-			@dbOpt = Matrix.new(size_y, 1)
+			# @dbOpt = Matrix.new(size_y, 1000)
 		end
 
 		def optimize(dw, dz)

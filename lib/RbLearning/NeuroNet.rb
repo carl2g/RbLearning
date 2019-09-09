@@ -35,8 +35,7 @@ class NeuroNet
 		act = [x]
 		zs = []
 		@layers.each do |l|
-			w = l.regularizeForward(l.w)
-			x = w * x + l.b
+			x = l.w * x + l.b
 			zs.push(x)
 			x = l.activFunc.func(x)
 			act.push(x)
@@ -57,8 +56,9 @@ class NeuroNet
 	def backPropagation(zs, act, y)
 		i = @layers.size - 1
 
-		regularize = @layers[i].regularizeBackward(@lossFunc.deriv(act[i + 1], y), @layers[i].w)
-		dz = regularize ** @layers[i].activFunc.derivate(zs[i])
+		loss = @lossFunc.deriv(act[i + 1], y)
+		loss = @layers[i].regularizer.regularizeBackward(loss, @layers[i].w)
+		dz = loss ** @layers[i].activFunc.derivate(zs[i])
 		dw = dz * act[i].transpose
 		dwOpt, dbOpt = @layers[i].optimize(dw, dz)
 
@@ -68,8 +68,8 @@ class NeuroNet
 		(0...@layers.size - 1).reverse_each do |i|
 			
 			tmp = @layers[i + 1].w.transpose * dz
-			regularize = @layers[i].regularizeBackward(tmp, @layers[i].w)
-			dz = regularize ** @layers[i].activFunc.derivate(zs[i])
+			# dz = @layers[i].regularizer.regularizeBackward(dz, @layers[i].w)
+			dz = tmp ** @layers[i].activFunc.derivate(zs[i])
 			dw = dz * act[i].transpose
 			dwOpt, dbOpt = @layers[i].optimize(dw, dz)
 			
@@ -87,8 +87,8 @@ class NeuroNet
 			@layers[i].b = bs[i]
 		end
 		
-		pred = predict(x)
-		@lastLoss = @lossFunc.loss(pred, y)
+		zs, act = feedForward(x)
+		@lastLoss = @lossFunc.loss(act.last, y)
 		STDERR.puts "Error: #{@lastLoss}"
 
 		return @layers

@@ -39,15 +39,28 @@ module Regularizer
 		end
 
 		def regularizeForward(w)
-			return w if @alpha == 0.0
-
-			return w
+			
 		end
 
 		def regularizeBackward(dw, w)
 			return dw if @alpha == 0.0
-
-			return dw + w.applyOp(:abs, 2).applyOp(:*, alpha)
+			
+			abs_w = Matrix.setVectorizedMatrix(
+				w.matrix.map do |w|
+					if w > 0.0
+						1
+					elsif w < 0.0 
+						-1
+					else
+						0
+					end 
+				end, 
+				w.size_y,
+				w.size_x
+			)
+			# dw.printShape
+			w.sumAxis.printM
+			return dw + abs_w.sumAxis.applyOp(:*, alpha)
 		end
 
 	end
@@ -59,16 +72,23 @@ module Regularizer
 			@alpha = alpha
 		end
 
-		def regularizeForward(w)
-			return w if @alpha == 0.0
-
-			return w.applyOp(:**, 2).applyOp(:*, alpha)
-		end
+		# def regularizeForward(w)
+		# 	return w if @alpha == 0.0
+			
+		# 	return w + w.applyOp(:**, 2).applyOp(:*, @alpha)
+		# 	# return w
+		# end
 
 		def regularizeBackward(dw, w)
 			return dw if @alpha == 0.0
-
-			return dw + w.applyOp(:*, alpha * 2)
+			
+			puts "=" * 20
+			w.sumAxis.printM
+			# w.printM
+			w.printShape
+			dw.printShape
+			puts "=" * 20
+			return dw + w.applyOp(:*, 2 * @alpha).sumAxis
 		end
 
 

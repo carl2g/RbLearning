@@ -17,8 +17,8 @@ data_y = Matrix.set(data_y.map do |i|
 	tmp
 end)
 
-nn.addLayer(NetLayer.new(65, data_x.size_x, ActivFunc::ReLu, lrn: 0.1, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.99)))
-nn.addLayer(NetLayer.new(10, 65, ActivFunc::SoftMax, lrn: 0.1, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.99)))
+# nn.addLayer(NetLayer.new(65, data_x.size_x, ActivFunc::ReLu, lrn: 0.1, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.99)))
+nn.addLayer(NetLayer.new(1, data_x.size_x, ActivFunc::SoftMax, lrn: 0.001, lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.99)))
 nn.addLossFunc(LossFunc::CrossEntropy)
 
 (0...350).each do |ep|

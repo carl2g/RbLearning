@@ -1,7 +1,7 @@
 require './../lib/RbLearning'
 require 'benchmark'
 
-include Statistics
+include Statistic
 include Utils
 include ActivFunc
 

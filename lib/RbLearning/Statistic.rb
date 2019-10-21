@@ -1,4 +1,4 @@
-module Statistics
+module Statistic
 
 	def mean(arr)
 		res = 0.0
@@ -53,5 +53,32 @@ module Statistics
 	def std_dev(arr)
 		Math.sqrt(variance(arr))
 	end
+
+	def normalize_range(mat, axis: 0)
+		m = axis == 1 ? mat.transpose : mat
+		
+		(0...m.size_y).each do |i|
+			min = m[i].min
+			max = m[i].max
+			delt = (max - min) == 0 ? 1 : (max - min)
+			(0...m[i].size).each do |x|
+				m[i, x] = (m[i, x] - min) / delt
+			end
+		end
+
+		return axis == 1 ? m.transpose : m
+	end
+
+		# 	else
+		# 	# std_dev = std_dev(m.matrix)
+		# 	# mean = mean(m.matrix)
+		# 	min = m.matrix.min
+		# 	max = m.matrix.max
+		# 	delt = (max - min) == 0 ? 1 : (max - min)
+		# 	m.matrix.each_with_index do |val, i|
+		# 		m.matrix[i] = (val - min) / delt
+		# 		# m.matrix[i] = (val - mean) / std_dev
+		# 	end
+		# end
 
 end

@@ -15,7 +15,8 @@ class NetLayer
 		)
 
 		@w = initWeights(size_y, size_x, min, max)
-		@b = initWeights(size_y, 1, 0.0, 0.0)
+		@b = Matrix.new(1, size_y, 1)
+		
 		@activFunc = actFunc
 		@lrn = lrn
 		@dropOut = dropOut

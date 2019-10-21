@@ -9,14 +9,13 @@ module LrnOptimizer
 
 		def setSize(size_y, size_x)
 			@dwOpt = Matrix.new(size_y, size_x)
-			# @dbOpt = Matrix.new(size_y, 1000)
 		end
 
 		def optimize(dw, dz)
 			@dwOpt = @dwOpt.applyOp(:*, @beta) + dw.applyOp(:*, 1.0 - @beta)
 			@dbOpt = dz
-			# @dbOpt = @dbOpt.applyOp(:*, @beta) + dz.applyOp(:*, 1 - @beta)
-			[@dwOpt, @dbOpt]
+
+			return [@dwOpt, @dbOpt]
 		end
 	end
 

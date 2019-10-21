@@ -1,10 +1,10 @@
-require_relative './Statistics'
+require_relative './Statistic'
 require_relative './Utils'
 require 'csv'
 
 class DataManager
 
-	include Statistics
+	include Statistic
 	include Utils
 
 	attr_accessor :hashed_data, :size_x, :size_y, :mat
@@ -248,7 +248,7 @@ class DataManager
 	# == Returns:
 	# 2 Matrix object representing the parameter x and the result y
 	#
-	def batch(y: [], x: matrix, batch_size: 24)
+	def self.batch(y: [], x: matrix, batch_size: 24)
 		Random.srand
 		indexes = (0...batch_size).map { Random.rand(0...x.size_y) }
 		batch_x = Matrix.set(indexes.map do |i|

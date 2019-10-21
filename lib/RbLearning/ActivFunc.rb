@@ -98,9 +98,11 @@ module ActivFunc
 				sum = 0.0
 				max = m.getMax(0, x, m.size_y, 1)
 				out = (0...m.size_y).map do |y|
-					tmp = CMath.exp(m[y, x].abs - max) + EPSYLON
+
+					tmp = CMath.exp(m[y, x].abs - max)
 					sum += tmp
 					tmp
+					
 				end
 				out.map { |val| val / sum }
 			end)
@@ -109,13 +111,18 @@ module ActivFunc
 
 		def self.derivate(m)
 			m = Matrix.set((0...m.size_x).map do |x|
+				
 				max = m.getMax(0, x, m.size_y, 1)
+				
 				sum = (0...m.size_y).sum do |y|
-					CMath.exp(m[y, x] - max) + EPSYLON
+					CMath.exp(m[y, x] - max)
 				end
+
 				(0...m.size_y).map do |y|
-					((CMath.exp(m[y, x] - max) + EPSYLON) / sum) * (1.0 - ((CMath.exp(m[y, x] - max) + EPSYLON) / sum))
+					diff = CMath.exp(m[y, x] - max) 
+					(diff / sum) * (1.0 - (diff / sum))
 				end
+
 			end)
 			return m.transpose
 		end

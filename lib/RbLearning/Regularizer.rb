@@ -58,8 +58,6 @@ module Regularizer
 				w.size_y,
 				w.size_x
 			)
-			# dw.printShape
-			w.sumAxis.printM
 			return dw + abs_w.sumAxis.applyOp(:*, alpha)
 		end
 
@@ -72,22 +70,15 @@ module Regularizer
 			@alpha = alpha
 		end
 
-		# def regularizeForward(w)
-		# 	return w if @alpha == 0.0
+		def regularizeForward(loss, w)
+			return loss if @alpha == 0.0
 			
-		# 	return w + w.applyOp(:**, 2).applyOp(:*, @alpha)
-		# 	# return w
-		# end
+			return loss + w.applyOp(:**, 2).applyOp(:*, @alpha).sumAxis
+		end
 
 		def regularizeBackward(dw, w)
 			return dw if @alpha == 0.0
 			
-			puts "=" * 20
-			w.sumAxis.printM
-			# w.printM
-			w.printShape
-			dw.printShape
-			puts "=" * 20
 			return dw + w.applyOp(:*, 2 * @alpha).sumAxis
 		end
 

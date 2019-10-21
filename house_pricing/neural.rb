@@ -1,7 +1,7 @@
 require './../lib/RbLearning'
 require 'benchmark'
 
-include Statistics
+include Statistic
 include Utils
 include ActivFunc
 
@@ -20,70 +20,33 @@ tests.keepLabels(train.labels)
 
 nn = NeuroNet.new
 
-data_x = train.matrix.normalize(axis: 1)
+data_x = Statistic::normalize_range(train.matrix, axis: 1)
 data_y = Matrix.setVectorizedMatrix(data_y, data_y.size, 1)
 
 layers = [
 	NetLayer.new(
-	 	10, 
+	 	64, 
 	 	data_x.size_x, 
 	 	ActivFunc::ReLu, 
-	 	lrn: 0.0001, 
-		lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.99),
-		# regularizer: Regularizer::DropOut.new(dropOutRate: 0.25),
-		regularizer: Regularizer::L2.new(alpha: 1000000000000)
+	 	lrn: 0.000000001, 
+		lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.9),
 	),
-	# NetLayer.new(
-	#  	1, 
-	#  	data_x.size_x, 
-	#  	ActivFunc::ReLu, 
-	#  	lrn: 0.0001, 
-	# 	lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.99),
-	# 	# regularizer: Regularizer::DropOut.new(dropOutRate: 0.25),
-		# regularizer: Regularizer::L1.new(alpha: 4000)
-	# ),
 	NetLayer.new(
 	 	1, 
-	 	10, 
+	 	64, 
 	 	ActivFunc::ReLu, 
-	 	lrn: 0.0001, 
-		lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.99),
-		# regularizer: Regularizer::DropOut.new(dropOutRate: 0.25),
-		regularizer: Regularizer::L2.new(alpha: 1)
+	 	lrn: 0.000000001, 
+		lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.9),
 	)
 ]
 
 nn.addLossFunc(LossFunc::MeanSqrtErr)
 nn.addLayers(layers)
+nn.train([data_y, data_x], batch_size: 32, iteration: 42, epoch: 100)
 
-(0...25000).each do |ep|
-	batch_x, batch_y = train.batch(y: data_y, x: data_x, batch_size: 24)
-	batch_x, batch_y = batch_x.transpose, batch_y.transpose
-	it = 32000000
-	(0..it).each do |i|
-		layers = nn.train(batch_x, batch_y)
-		batch_x.printShape
-		puts "epoch: #{ep} iteration: #{i}"
-		# zs, act = nn.feedForward(batch_x)
-		# puts "Predictions: "
-		# act.last.transpose.printM(4)
-		# puts "Expected results: "
-		# batch_y.transpose.printM
-		# nn.layers.last.w.printM
-		# puts nn.layers.last.w.sum
-		puts "=" * 30
-	end
-end
 
-it = 1000
-(0..it).each do |i|
-	batch_x, batch_y = data_x.transpose, data_y.transpose
-	nn.train(batch_x, batch_y)
-end
-
-data_x = tests.matrix
-
-zs, pred = nn.feedForward(data_x.transpose)
+data_x = Statistic::normalize_range(tests.matrix, axis: 1)
+zs, pred = nn.feedForward(data_x)
 
 CSV.open("./res.csv", "wb") do |csv|
 	csv << ['Id', 'SalePrice']

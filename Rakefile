@@ -1,3 +1,3 @@
 task :test do
-  ruby "test/MatrixTest.rb"
+  ruby "./lib/test/MatrixTest.rb"
 end

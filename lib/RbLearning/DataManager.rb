@@ -7,7 +7,7 @@ class DataManager
 	include Statistic
 	include Utils
 
-	attr_accessor :hashed_data, :size_x, :size_y, :mat
+	attr_accessor :data, :size_x, :size_y
 
 	# Create DataManager Object
 	#
@@ -19,16 +19,16 @@ class DataManager
 	#
 	def initialize(csv_file)
 		content 		= CSV.read(csv_file)
-		@hashed_data 	= {}
-		content.shift.each { |key| @hashed_data[key] = [] }
-		@hashed_data.each_with_index do |h, i|
+		@data 	= {}
+		content.shift.each { |key| @data[key] = [] }
+		@data.each_with_index do |h, i|
 			key = h.first
-			@hashed_data[key] += content.map do |line|
+			@data[key] += content.map do |line|
 				line[i]
 			end
 		end
-		@size_x = @hashed_data.size
-		@size_y = @hashed_data.first.last.size
+		@size_x = @data.size
+		@size_y = @data.first.last.size
 	end
 
 	# Generate a Matrix Object using DataManager Labels
@@ -41,7 +41,7 @@ class DataManager
 	# Matrix Object
 	#
 	def matrixGenerate(with = self.labels)
-		newH = @hashed_data.select { |key, val| with.include?(key) }
+		newH = @data.select { |key, val| with.include?(key) }
 		size_y = @size_y
 		size_x = newH.keys.size
 		m = Matrix.new(size_y, size_x)
@@ -73,7 +73,7 @@ class DataManager
 	# Array of value
 	#
 	def [](key)
-		@hashed_data[key]
+		@data[key]
 	end
 
 	# Set values for a given label
@@ -85,7 +85,7 @@ class DataManager
 	# New Array of value
 	#
 	def []=(key, values)
-		@hashed_data[key] = values
+		@data[key] = values
 	end
 
 	# Replace lables with non numeric values by dumies variables
@@ -98,7 +98,7 @@ class DataManager
 	#
 	def addDumies
 		labels = []
-		@hashed_data.each do |key, line|
+		@data.each do |key, line|
 			labels += line.each_with_index.map do |val, i|
 				key if !self.is_numeric?(val)
 			end
@@ -125,7 +125,7 @@ class DataManager
 	# Removed data
 	#
 	def remove(label)
-		@hashed_data.delete(label)
+		@data.delete(label)
 	end
 
 	# Replace a given lable with non numeric values by dumies variables
@@ -139,10 +139,10 @@ class DataManager
 	def addDumie(label)
 		values = self.remove(label)
 		exising_values = values.uniq
-		exising_values.each { |lab| @hashed_data[label + '_' + lab.to_s] = [] if !@hashed_data[lab] }
+		exising_values.each { |lab| @data[label + '_' + lab.to_s] = [] if !@data[lab] }
 		(0...@size_y).each do |i|
 			exising_values.each do |val|
-				 @hashed_data[label + '_' + val.to_s] << (values[i] == val ? 1 : 0)
+				 @data[label + '_' + val.to_s] << (values[i] == val ? 1 : 0)
 			end
 		end
 		return self.labels
@@ -154,7 +154,7 @@ class DataManager
 	# labels
 	#
 	def labels
-		@hashed_data.keys
+		@data.keys
 	end
 
 	# Remove rows having given value
@@ -250,8 +250,8 @@ class DataManager
 	private
 
 		def updateSizeInfo
-			@size_x = @hashed_data.size
-			@size_y = @hashed_data.first.last.size
+			@size_x = @data.size
+			@size_y = @data.first.last.size
 		end
 
 end

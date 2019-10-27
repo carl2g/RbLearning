@@ -8,6 +8,7 @@ require_relative './RbLearning/NetLayer'
 require_relative './RbLearning/Cnn'
 require_relative './RbLearning/LrnOptimizer'
 require_relative './RbLearning/Regularizer'
+require_relative './RbLearning/DecisionTree'
 
 ############ Lib file ############
 require_relative './RbLearning/lib/MatrixLib'

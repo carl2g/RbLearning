@@ -67,16 +67,12 @@ module Statistic
 		return axis == 1 ? m.transpose : m
 	end
 
-		# 	else
-		# 	# std_dev = std_dev(m.matrix)
-		# 	# mean = mean(m.matrix)
-		# 	min = m.matrix.min
-		# 	max = m.matrix.max
-		# 	delt = (max - min) == 0 ? 1 : (max - min)
-		# 	m.matrix.each_with_index do |val, i|
-		# 		m.matrix[i] = (val - min) / delt
-		# 		# m.matrix[i] = (val - mean) / std_dev
-		# 	end
-		# end
+	def relative_frequence(arr, val)
+		return frequence(arr, val) / arr.size.to_f
+	end
+
+	def frequence(arr, val)
+		return arr.count(val)
+	end
 
 end

@@ -6,7 +6,6 @@ class NeuroNet
 
 	include ActivFunc
 	include LossFunc
-	# include DataManager
 
 	attr_accessor :layers, :lossFunc, :lastLoss
 

@@ -27,7 +27,7 @@ class Matrix
 	end
 
 	def setLine(y, arr)
-		(0...arr.size).each { |i| @matrix[y, i] = arr[i] }
+		(0...arr.size).each { |i| self[y, i] = arr[i] }
 	end
 
 	def set(arr)
@@ -250,11 +250,8 @@ class Matrix
 	end
 
 	def getLines(y)
-		if y.is_a? Range
-			@matrix[(y.first * @size_x)...(y.last * @size_x)]
-		else
-			@matrix[(y * @size_x)...(y * @size_x + @size_x)]
-		end
+		range = (y * @size_x)...(y * @size_x + @size_x)
+		return @matrix[range]
 	end
 
 end

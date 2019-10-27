@@ -1,9 +1,7 @@
 module Statistic
 
 	def mean(arr)
-		res = 0.0
-		arr.each { |val| res += val.to_f }
-		return res / arr.size
+		return arr.sum { |val| val.to_f } / arr.size
 	end
 
 	def quartile(datas, q)
@@ -22,11 +20,11 @@ module Statistic
 	def cov(arr1, arr2)
 		mean1 = mean(arr1)
 		mean2 = mean(arr2)
-		tmp = 0
-		(0...arr1.size).each do |i|
-			tmp += (arr1[i].to_f - mean1) * (arr2[i].to_f - mean2)
+
+		tmp = (0...arr1.size).sum do |i|
+			(arr1[i].to_f - mean1) * (arr2[i].to_f - mean2)
 		end
-		return tmp / arr1.size
+		return tmp / (arr1.size - 1)
 	end
 
 	def skewness(arr)
@@ -46,8 +44,8 @@ module Statistic
 	def variance(arr)
 		dev = 0
 		mean = self.mean(arr)
-		arr.each { |val| dev += (mean - val.to_f)**2 }
-		return dev / arr.size.to_f
+		var = arr.sum { |val| (mean - val.to_f)**2 }
+		return var / (arr.size - 1)
 	end
 
 	def std_dev(arr)

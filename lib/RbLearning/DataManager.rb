@@ -45,10 +45,11 @@ class DataManager
 		size_y = @size_y
 		size_x = newH.keys.size
 		m = Matrix.new(size_y, size_x)
-		(0...size_y).each do |x|
-			newH.each_with_index do |h, y|
-				key, val = h
-				m[x, y] = val[x].to_f
+		
+		(0...size_x).each do |x|
+			arr = newH[newH.keys[x]]
+			arr.each_with_index do |val, y|
+				m[y, x] = val.to_f
 			end
 		end
 		return m
@@ -60,8 +61,7 @@ class DataManager
 	# Matrix Object
 	#
 	def matrix
-		@mat ||= self.matrixGenerate
-		return @mat
+		return matrixGenerate
 	end
 
 	# Get all values for a given label
@@ -157,19 +157,6 @@ class DataManager
 		@hashed_data.keys
 	end
 
-	# Normalize values, divide all values by the max value for a given label
-	#
-	def normalize
-		self.labels.each do |key|
-			self[key].map! { |e| e.to_f }
-			max = self[key].max.abs
-			min = self[key].min.abs
-			norm = max < min ? min : max
-			self[key].map! { |e| norm != 0 ? e / norm : e }
-		end
-		return nil
-	end
-
 	# Remove rows having given value
 	#
 	# == Parameters:
@@ -236,7 +223,7 @@ class DataManager
 	# labels
 	#
 	def removeKeyNullVal(key, perc, val = nil)
-		self.remove(key) if self[key].count(val) >= (@size_y / 100.0) * perc
+		self.remove(key) if self[key].count(val) >= (@size_y / 100.0) * (perc * 100)
 	end
 
 	# Generate batch of given size from matrix used to train NeuralNet

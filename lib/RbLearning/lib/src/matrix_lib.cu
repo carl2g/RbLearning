@@ -9,9 +9,9 @@ __global__ void cuda_dot(double *m1, double *m2, int size_y, int size_v, int siz
 	// new_m[(blockIdx.x * size_v) + threadIdx.x] += tmp;
 	double tmp = 0;
 	for (int x = 0; x < size_x; ++x) {
-		tmp += m1[(threadIdx.x * size_x) + x] * m2[(x * size_v) + blockIdx.x];
+		tmp += m1[(blockIdx.x * size_x) + x] * m2[(x * size_v) + threadIdx.x];
 	}
-	new_m[(threadIdx.x * size_v) + blockIdx.x] = tmp;
+	new_m[(blockIdx.x * size_v) + threadIdx.x] = tmp;
 }
 
 __global__ void cuda_mult(double *m1, double *m2, double *new_m) {
@@ -50,7 +50,7 @@ extern "C" {
 		cudaMemcpy(cuda_m1, m1, (size_x * size_y) * sizeof(double), cudaMemcpyHostToDevice);
 		cudaMemcpy(cuda_m2, m2, (size_x * size_v) * sizeof(double), cudaMemcpyHostToDevice);
 		
-		cuda_dot<<<size_v, size_y>>>(cuda_m1, cuda_m2, size_y, size_v, size_x, cuda_new_m);
+		cuda_dot<<<size_y, size_v>>>(cuda_m1, cuda_m2, size_y, size_v, size_x, cuda_new_m);
 		cudaMemcpy(new_m, cuda_new_m, (size_y * size_v) * sizeof(double), cudaMemcpyDeviceToHost);
 
 		cudaFree(cuda_new_m);

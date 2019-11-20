@@ -108,6 +108,14 @@ class Matrix
 		return m
 	end
 
+	def ^(n)
+		return Matrix.setVectorizedMatrix(
+				self.matrix.map { |v| v**n },
+				self.size_y,
+				self.size_x
+			)
+	end
+
 	def **(matrix)
 		m = Matrix.boardcasting(matrix, self.size_y, self.size_x)
 		vec1 = self.to_vect

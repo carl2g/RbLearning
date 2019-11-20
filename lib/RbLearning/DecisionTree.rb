@@ -19,7 +19,6 @@ class DecisionTree
 
 		data_x.each do |part_key, part|
 			inf_gain = @informationGain.information_gain(part, data_y)
-			puts "#{part_key}: #{inf_gain}"
 			if inf_gain >= information_gain
 				information_gain = inf_gain
 				selected_key = part_key
@@ -28,22 +27,33 @@ class DecisionTree
 		return [selected_key, information_gain]
 	end
 
+	def count_elem(vals)
+		res = {}
+		uniq_vals = vals.uniq
+		uniq_vals.each do |val|
+			res[val] = vals.count(val)
+		end
+		return res
+	end
+
 	def leaves_creation(part_feature, data_x, data_y, selected_key)
 		tree = {}
 
 		part_feature.uniq.each do |val|
 			indexes = find_indexes(part_feature, val)
 			sub_set = hash_select_indexes(data_x, indexes)
+			vals = data_y.select.each_with_index { |val, i| indexes.include?(i) }
 
+			tree[val] = { prediction: count_elem(vals).max_by {|k, v| v }[0] }
+			
 			if @informationGain.calc_part_loss(indexes, val, data_y) == 0
-				tree[val] = data_y[indexes.first]
 				indexes.each_with_index do |i, sub_ind|
 					part_feature.delete_at(i - sub_ind)
 					data_y.delete_at(i - sub_ind)
 					data_x = hash_remove_index(data_x,  i - sub_ind)
 				end
 			else
-				tree[val] = sub_set
+				tree[val].merge(sub_set)
 			end
 		end
 		return tree
@@ -56,32 +66,40 @@ class DecisionTree
 			part_data_y = []
 			indexes.each { |i| part_data_y.push(data_y[i]) }
 			sub_set = hash_select_indexes(data, indexes)
-			tree[selected_key][val] = self.generate_tree(sub_set, part_data_y) if !part_data_y.empty?
+			tree[selected_key][val] = self.generate_tree(sub_set, part_data_y).merge({prediction: tree[selected_key][val][:prediction]}) if !data.empty?
 		end
 		return tree
 	end
 
 	def generate_tree(data, data_y, tree: {})
+		return tree if data.empty?
 		data_x = data.clone
+		
 		selected_key, information_gain = select_most_information_gain_feature(data_x, data_y)
 
-		puts "MAX #{selected_key}: #{information_gain}"
-
 		part_feature = data_x.delete(selected_key)
+
 		leaves = leaves_creation(part_feature, data_x, data_y, selected_key)
-		puts "=" * 100
 		tree = subset_loss_partition(data_x, data_y, part_feature, tree: {selected_key => tree.merge(leaves)}, selected_key: selected_key)
 		return tree
 	end
 
-	def self.classify(data, tree)
+	def self.classify(data, tree, parent_nod = nil)
 		leaf = nil
 		
 		tree.each do |key, vals|
+			return vals if vals.class != Hash
 			lower_nod = vals[data[key]]
+			if lower_nod.nil?
+				parent_key, parent_vals = parent_nod.keys.first, parent_nod.values.first
+				return parent_vals[data[parent_key]][:prediction] 
+			elsif key == :prediction 
+				return vals
+			end
 			leaf = lower_nod
-			leaf = self.classify(data, lower_nod) if lower_nod.class == Hash
+			leaf = self.classify(data, lower_nod, {key => vals})
 		end
+					
 		return leaf
 	end
 
@@ -112,7 +130,7 @@ class Gini
 			prob = indexes.size / part_size.to_f
 			prob * self.calc_part_loss(indexes, val, data)
 		end
-		puts "rem: #{rem}"
+		# puts "rem: #{rem}"
 		return rem
 	end
 

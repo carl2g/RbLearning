@@ -1,0 +1,64 @@
+Pclass: 0.0838310452960116
+Sex: 0.2176601066606142
+SibSp: 0.03346632133870997
+Embarked: 0.024047090707960406
+tree: {"male"=>{:prediction=>"0"}, "female"=>{:prediction=>"1"}}
+Pclass: 0.036694507395207854
+SibSp: 0.02062960572675554
+Embarked: 0.015555315192871899
+tree: {"3"=>{:prediction=>"0"}, "1"=>{:prediction=>"0"}, "2"=>{:prediction=>"1"}}
+SibSp: 0.013291486907894723
+Embarked: 0.009117558173592943
+tree: {"1"=>{:prediction=>"0"}, "0"=>{:prediction=>"0"}, "3"=>{:prediction=>"0"}, "4"=>{:prediction=>"0"}, "2"=>{:prediction=>"0"}, "5"=>{:prediction=>"0"}, "8"=>{:prediction=>"0"}}
+Embarked: 0.09134245486407211
+tree: {"S"=>{:prediction=>"0"}, "Q"=>{:prediction=>"0"}, "C"=>{:prediction=>"1"}}
+Embarked: 0.004592714008935905
+tree: {"S"=>{:prediction=>"0"}, "Q"=>{:prediction=>"0"}, "C"=>{:prediction=>"0"}}
+Embarked: 0.05144055483723614
+tree: {"Q"=>{:prediction=>"0"}, "S"=>{:prediction=>"0"}}
+Embarked: 0.5435644431995964
+tree: {"C"=>{:prediction=>"0"}, "S"=>{:prediction=>"0"}, "Q"=>{:prediction=>"1"}}
+SibSp: 0.019874441454344804
+Embarked: 0.0072204479951916145
+tree: {"0"=>{:prediction=>"0"}, "3"=>{:prediction=>"0"}, "1"=>{:prediction=>"0"}, "2"=>{:prediction=>"0"}}
+Embarked: 0.0003753097044342235
+tree: {"S"=>{:prediction=>"0"}, "C"=>{:prediction=>"0"}}
+Embarked: 0.01862677053546402
+tree: {"C"=>{:prediction=>"0"}, "S"=>{:prediction=>"0"}}
+Embarked: 1.0
+tree: {"Q"=>{:prediction=>"0"}, "S"=>{:prediction=>"1"}}
+SibSp: 0.01893446986626446
+Embarked: 0.003180243945399175
+tree: {"0"=>{:prediction=>"1"}, "1"=>{:prediction=>"0"}, "2"=>{:prediction=>"0"}}
+Embarked: 0.02895718058602509
+tree: {"S"=>{:prediction=>"1"}, "C"=>{:prediction=>"0"}, "Q"=>{:prediction=>"0"}}
+Embarked: 0.09034311054717192
+tree: {"S"=>{:prediction=>"0"}, "C"=>{:prediction=>"0"}}
+Embarked: 0.0
+tree: {"S"=>{:prediction=>"0"}}
+Pclass: 0.207572089443242
+SibSp: 0.0557268174180916
+Embarked: 0.02770343730025182
+tree: {"1"=>{:prediction=>"1"}, "3"=>{:prediction=>"1"}, "2"=>{:prediction=>"1"}}
+SibSp: 0.007113741338139634
+Embarked: 0.0034122292125308706
+tree: {"1"=>{:prediction=>"1"}, "0"=>{:prediction=>"1"}, "3"=>{:prediction=>"1"}, "2"=>{:prediction=>"1"}}
+Embarked: 0.048195879042810225
+tree: {"C"=>{:prediction=>"1"}, "S"=>{:prediction=>"1"}, "Q"=>{:prediction=>"1"}}
+Embarked: 0.022615366280386753
+tree: {"S"=>{:prediction=>"1"}, nil=>{:prediction=>"1"}, "C"=>{:prediction=>"0"}}
+SibSp: 0.0733663674054158
+Embarked: 0.07412958874221642
+tree: {"S"=>{:prediction=>"1"}, "C"=>{:prediction=>"1"}, "Q"=>{:prediction=>"1"}}
+SibSp: 0.0926971087663433
+tree: {"0"=>{:prediction=>"1"}, "1"=>{:prediction=>"1"}, "3"=>{:prediction=>"0"}, "2"=>{:prediction=>"0"}, "4"=>{:prediction=>"1"}, "5"=>{:prediction=>"0"}, "8"=>{:prediction=>"0"}}
+SibSp: 0.1289381643517551
+tree: {"0"=>{:prediction=>"1"}, "1"=>{:prediction=>"1"}, "2"=>{:prediction=>"1"}}
+SibSp: 0.018654564579335342
+tree: {"0"=>{:prediction=>"1"}, "1"=>{:prediction=>"1"}, "2"=>{:prediction=>"1"}}
+SibSp: 0.009576154363426348
+Embarked: 0.014995811397765235
+tree: {"C"=>{:prediction=>"1"}, "S"=>{:prediction=>"1"}, "Q"=>{:prediction=>"1"}}
+SibSp: 0.013765459858914808
+tree: {"0"=>{:prediction=>"1"}, "1"=>{:prediction=>"0"}, "2"=>{:prediction=>"1"}, "3"=>{:prediction=>"1"}}
+Final tree: {"Sex"=>{"male"=>{"Pclass"=>{"3"=>{"SibSp"=>{"1"=>{"Embarked"=>{"S"=>{:prediction=>"0"}, "Q"=>{:prediction=>"0"}, "C"=>{:prediction=>"1"}}}, "0"=>{"Embarked"=>{"S"=>{:prediction=>"0"}, "Q"=>{:prediction=>"0"}, "C"=>{:prediction=>"0"}}}, "3"=>{:prediction=>"0"}, "4"=>{"Embarked"=>{"Q"=>{:prediction=>"0"}, "S"=>{:prediction=>"0"}}}, "2"=>{"Embarked"=>{"C"=>{:prediction=>"0"}, "S"=>{:prediction=>"0"}, "Q"=>{:prediction=>"1"}}}, "5"=>{:prediction=>"0"}, "8"=>{:prediction=>"0"}}}, "1"=>{"SibSp"=>{"0"=>{"Embarked"=>{"S"=>{:prediction=>"0"}, "C"=>{:prediction=>"0"}}}, "3"=>{:prediction=>"0"}, "1"=>{"Embarked"=>{"C"=>{:prediction=>"0"}, "S"=>{:prediction=>"0"}}}, "2"=>{"Embarked"=>{"Q"=>{:prediction=>"0"}, "S"=>{:prediction=>"1"}}}}}, "2"=>{"SibSp"=>{"0"=>{"Embarked"=>{"S"=>{:prediction=>"1"}, "C"=>{:prediction=>"0"}, "Q"=>{:prediction=>"0"}}}, "1"=>{"Embarked"=>{"S"=>{:prediction=>"0"}, "C"=>{:prediction=>"0"}}}, "2"=>{"Embarked"=>{"S"=>{:prediction=>"0"}}}}}}}, "female"=>{"Pclass"=>{"1"=>{"SibSp"=>{"1"=>{"Embarked"=>{"C"=>{:prediction=>"1"}, "S"=>{:prediction=>"1"}, "Q"=>{:prediction=>"1"}}}, "0"=>{"Embarked"=>{"S"=>{:prediction=>"1"}, nil=>{:prediction=>"1"}, "C"=>{:prediction=>"0"}}}, "3"=>{:prediction=>"1"}, "2"=>{:prediction=>"1"}}}, "3"=>{"Embarked"=>{"S"=>{"SibSp"=>{"0"=>{:prediction=>"1"}, "1"=>{:prediction=>"1"}, "3"=>{:prediction=>"0"}, "2"=>{:prediction=>"0"}, "4"=>{:prediction=>"1"}, "5"=>{:prediction=>"0"}, "8"=>{:prediction=>"0"}}}, "C"=>{"SibSp"=>{"0"=>{:prediction=>"1"}, "1"=>{:prediction=>"1"}, "2"=>{:prediction=>"1"}}}, "Q"=>{"SibSp"=>{"0"=>{:prediction=>"1"}, "1"=>{:prediction=>"1"}, "2"=>{:prediction=>"1"}}}}}, "2"=>{"Embarked"=>{"C"=>{:prediction=>"1"}, "S"=>{"SibSp"=>{"0"=>{:prediction=>"1"}, "1"=>{:prediction=>"0"}, "2"=>{:prediction=>"1"}, "3"=>{:prediction=>"1"}}}, "Q"=>{:prediction=>"1"}}}}}}}

@@ -18,7 +18,7 @@ class DataManager
 	# New DataManager Object
 	#
 	def initialize(csv_file)
-		content 		= CSV.read(csv_file)
+		content = CSV.read(csv_file)
 		@data 	= {}
 		content.shift.each { |key| @data[key] = [] }
 		@data.each_with_index do |h, i|
@@ -193,6 +193,14 @@ class DataManager
 		end
 		updateSizeInfo
 		return nil
+	end
+
+	def replace_val(val_to_replace, new_val)
+		self.data.each do |key, val|
+			val.each_with_index.each do |v, i|
+				self[key][i] = new_val if v == val_to_replace
+			end
+		end
 	end
 
 	# Remove labels having a given percent of given value for given labels

@@ -36,12 +36,18 @@ class NeuroNet
 		act = [x]
 		zs = []
 		@layers.each do |l|
-			x = (x * l.w.transpose) + l.b
+			w = l.w
+			x = (x * w.transpose) + l.b
 			zs.push(x)
 			x = l.activFunc.func(x)
 			act.push(x)
 		end
 		return [zs, act]
+	end
+
+	def pred(data_x)
+		zs, acts = feedForward(data_x)
+		return acts.last
 	end
 
 	def backPropagation(zs, act, y)

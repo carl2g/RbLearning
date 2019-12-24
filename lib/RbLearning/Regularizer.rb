@@ -8,7 +8,7 @@ module Regularizer
 			@dropOutRate = dropOutRate
 		end
 
-		def regularizeForward(w)
+		def regularizeForward(w) 
 			return w if @dropOutRate == 0.0
 
 			@filter = Matrix.new(w.size_y, w.size_x, 1)
@@ -39,7 +39,7 @@ module Regularizer
 		end
 
 		def regularizeForward(w)
-			
+			return w + w.applyOp(:*, self.alpha)
 		end
 
 		def regularizeBackward(dw, w)
@@ -58,6 +58,9 @@ module Regularizer
 				w.size_y,
 				w.size_x
 			)
+			dw.printShape
+			# abs_w.sumAxis.printShape
+			# exit
 			return dw + abs_w.sumAxis.applyOp(:*, alpha)
 		end
 

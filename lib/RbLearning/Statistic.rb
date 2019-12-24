@@ -37,7 +37,7 @@ module Statistic
 		return skew / arr.size
 	end
 
-	def corelation(arr1, arr2)
+	def correlation(arr1, arr2)
 		cov(arr1, arr2) / (std_dev(arr1) * std_dev(arr2))
 	end
 
@@ -65,6 +65,17 @@ module Statistic
 		end
 
 		return axis == 1 ? m.transpose : m
+	end
+
+	def standerdized(mat)
+		mean = mean(mat.matrix)		
+		std  = std_dev(mat.matrix)
+
+		mat.matrix = mat.matrix.map do |v|
+			(v - mean) / std
+		end
+
+		return mat
 	end
 
 	def relative_frequence(arr, val)

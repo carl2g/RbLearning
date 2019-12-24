@@ -139,10 +139,14 @@ class DataManager
 	def addDumie(label)
 		values = self.remove(label)
 		exising_values = values.uniq
-		exising_values.each { |lab| @data[label + '_' + lab.to_s] = [] if !@data[lab] }
+		exising_values.each do |lab| 
+			new_lab = label + '_' + lab.to_s
+			new_feature = {new_lab => []}
+			self.data = new_feature.merge(self.data)
+		end
 		(0...@size_y).each do |i|
 			exising_values.each do |val|
-				 @data[label + '_' + val.to_s] << (values[i] == val ? 1 : 0)
+				 self.data[label + '_' + val.to_s] << (values[i] == val ? 1 : 0)
 			end
 		end
 		return self.labels
@@ -188,11 +192,19 @@ class DataManager
 	# index to delete row
 	#
 	def removeAt(i)
+		rm_data = []
 		self.labels.each do |l|
-			self[l].delete_at(i)
+			rm_data << self[l].delete_at(i)
 		end
-		updateSizeInfo
-		return nil
+		updateSize
+		return rm_data
+	end
+
+	def replace_val_label(lab, val_to_replace, new_val)
+		self[lab] = self[lab].map.each_with_index do |val, i|
+				val == val_to_replace ? new_val : val
+		end
+		return self[lab]
 	end
 
 	def replace_val(val_to_replace, new_val)
@@ -255,9 +267,28 @@ class DataManager
 		return [batch_x, batch_y]
 	end
 
+	def split(arr, target)
+		data = []
+		v = 0
+		arr.each_with_index do |perc, it|
+			x = []
+			y = []
+			nb = (self.size_y * perc).round
+			(0...nb).each do |i|
+				ind = Random.rand(0...self.size_y)
+				x << self.removeAt(ind)
+				y << target[ind]
+			end
+			data[v] = Matrix.set(x)
+			data[v + 1] = Matrix.set(y)
+			v = v + 2
+		end
+		return data
+	end
+
 	private
 
-		def updateSizeInfo
+		def updateSize
 			@size_x = @data.size
 			@size_y = @data.first.last.size
 		end

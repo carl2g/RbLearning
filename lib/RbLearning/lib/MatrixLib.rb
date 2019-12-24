@@ -15,6 +15,7 @@ module CMath
 	ffi_lib 'm'
   	attach_function :exp, [:double], :double
   	attach_function :tanh, [:double], :double
+  	attach_function :log, [:double], :double
 end
 
 module LibC

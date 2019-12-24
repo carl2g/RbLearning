@@ -1,29 +1,30 @@
 require_relative './lib/MatrixLib'
+require "csv"
 
 class Matrix
 
 	attr_accessor :matrix, :size_x, :size_y
 
-	def initialize(size_y = 0, size_x = size_y, val = 0)
-		@size_x = size_x
-		@size_y = size_y
-		@matrix = Array.new(size_y * size_x) { |i| val }
+	def initialize(size_y = 1, size_x = size_y, val = 0)
+		self.size_x = size_x
+		self.size_y = size_y
+		self.matrix = Array.new(size_y * size_x) { |i| val }
 	end
 
 	def get2DArr
-		Array.new(@size_y) { |y| Array.new(@size_x) { |x| @matrix[y * @size_x + x] } }
+		Array.new(@size_y) { |y| Array.new(@size_x) { |x| self.matrix[y * @size_x + x] } }
 	end
 
 	def[](y, x = nil)
 		if x.nil?
 			getLines(y)
 		else
-			@matrix[y * @size_x + x]
+			self.matrix[y * @size_x + x]
 		end
 	end
 
 	def []=(y, x, val)
-		@matrix[y * @size_x + x] = val
+		self.matrix[y * @size_x + x] = val
 	end
 
 	def setLine(y, arr)
@@ -31,14 +32,14 @@ class Matrix
 	end
 
 	def set(arr)
-		@matrix = arr.flat_map do |line|
+		self.matrix = arr.flat_map do |line|
 			line.map do |val|
 				val.to_f
 			end
 		end
 	end
 
-	def dimensions
+	def getShape
 		[self.size_y, self.size_x]
 	end
 
@@ -161,6 +162,17 @@ class Matrix
 		return newM
 	end
 
+	def dump_matrix(mat)
+		self.matrix = mat.matrix.clone
+		self.reshape(mat.getShape)
+	end
+
+	def drop_row(i)
+		first_part_mat = self.getMat(0, 0, i, self.size_x)
+		sec_part_mat = self.getMat(i + 1, 0, self.size_y - (i + 1) , self.size_x)
+		self.dump_matrix((first_part_mat.transpose << sec_part_mat.transpose).transpose)
+	end
+
 	def to_vect
 		self.matrix
 	end
@@ -227,11 +239,20 @@ class Matrix
 		return arr
 	end
 
+	def to_csv
+		csv = CSV.generate do |csv|
+			(0...self.size_y).each do |y|
+				csv << self.getLines(y)
+			end
+		end
+		return csv
+	end
+
 	def getMat(beg_y, beg_x, size_y, size_x)
 		newM = Matrix.new(size_y, size_x)
 		(0...size_y).each do |y|
 			(0...size_x).each do |x|
-				newM[y, x] = self[beg_y + y][beg_x + x] if self[beg_y + y] && self[beg_y + y][beg_x + x]
+				newM[y, x] = self[beg_y + y, beg_x + x] if self[beg_y + y] && self[beg_y + y, beg_x + x]
 			end
 		end
 		return newM
@@ -257,9 +278,22 @@ class Matrix
 		)
 	end
 
+	def min
+		self.matrix.min
+	end
+
+	def max
+		self.matrix.max
+	end
+
+	def reshape(shape)
+		self.size_y = shape[0]
+		self.size_x = shape[1]
+	end
+
 	def getLines(y)
 		range = (y * @size_x)...(y * @size_x + @size_x)
-		return @matrix[range]
+		return self.matrix[range]
 	end
 
 end

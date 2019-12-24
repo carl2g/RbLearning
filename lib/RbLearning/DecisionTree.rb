@@ -130,7 +130,6 @@ class Gini
 			prob = indexes.size / part_size.to_f
 			prob * self.calc_part_loss(indexes, val, data)
 		end
-		# puts "rem: #{rem}"
 		return rem
 	end
 

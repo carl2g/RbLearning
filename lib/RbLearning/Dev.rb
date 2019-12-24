@@ -38,16 +38,7 @@ def switchLine(mat, y, x)
 end
 
 def findPivot(mat, y, x)
-	# return [y, x] if mat[y] && mat[y, y] && mat[y, y] != 0
-	# while y < mat.size_y
-	# puts "=" * 100
-	# mat.printM
-	# puts "=" * 20
 	switchLine(mat, y, x)
-	# mat.printM
-	# # 	break if mat[y, x] != 0
-	# # 	y = y + 1
-	# # end
 	return [y, x]
 end
 

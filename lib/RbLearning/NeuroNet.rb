@@ -50,12 +50,11 @@ class NeuroNet
 			#####################################
 			#### Compute activation function ####
 			#####################################
-			actOut = l.activFunc.nil? ? x : l.activFunc.func(x)
-
+			x = l.activFunc.nil? ? x : l.activFunc.func(x)
 			#########################################################
 			#### Save output of activation function for derivate ####
 			#########################################################
-			act.push(actOut)
+			act.push(x)
 		end
 		puts "=" * 20
 		return [zs, act]

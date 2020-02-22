@@ -180,10 +180,15 @@ class DataManager
 	# value to delete row
 	#
 	def removeRow(key, rm_val)
-		self[key].each_with_index.reverse_each do |val, i|
-			removeAt(i) if val == rm_val
+		offset = 0
+		rm_rows = []
+		self[key].each_with_index do |val, i|
+			if val == rm_val
+				rm_rows << removeAt(i - offset) 
+				offset += 1
+			end
 		end
-		return nil
+		return rm_rows
 	end
 
 	# Remove rows at a given index
@@ -198,6 +203,14 @@ class DataManager
 		end
 		updateSize
 		return rm_data
+	end
+
+	def getAt(i)
+		data = []
+		self.labels.each do |l|
+			data << self[l][i]
+		end
+		return data
 	end
 
 	def replace_val_label(lab, val_to_replace, new_val)
@@ -267,18 +280,27 @@ class DataManager
 		return [batch_x, batch_y]
 	end
 
-	def split(arr, target)
+	def split(arr, target, random: false)
 		data = []
+		original_size = self.size_y
 		v = 0
+		added_inds = []
+		offset = 0
 		arr.each_with_index do |perc, it|
 			x = []
 			y = []
-			nb = (self.size_y * perc).round
+			nb = (original_size * perc).round
 			(0...nb).each do |i|
-				ind = Random.rand(0...self.size_y)
-				x << self.removeAt(ind)
-				y << target[ind]
+				ind = random ? Random.rand(0...original_size) : i + offset
+				if added_inds.include?(ind)
+					redo
+				else 
+					x << self.getAt(ind)
+					y << target[ind]
+					added_inds << ind
+				end
 			end
+			offset += nb
 			data[v] = Matrix.set(x)
 			data[v + 1] = Matrix.set(y)
 			v = v + 2

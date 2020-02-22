@@ -1,6 +1,16 @@
 require_relative './lib/MatrixLib'
 require "csv"
 
+class Input
+
+	attr_accessor :input_size
+
+	def initialize(input_size)
+		self.input_size = input_size
+	end
+
+end
+
 class Matrix
 
 	attr_accessor :matrix, :size_x, :size_y
@@ -162,6 +172,21 @@ class Matrix
 		return newM
 	end
 
+	def >>(matrix)
+		newM = Matrix.new(self.size_y, self.size_x + matrix.size_x)
+		(0...self.size_y).each do |y|
+			(0...self.size_x).each do |x|
+				newM[y, x] = matrix[y, x]
+			end
+		end
+		(0...matrix.size_y).each do |y|
+			(0...matrix.size_x).each do |x|
+				newM[y, self.size_x + x] = self[y, x]
+			end
+		end
+		return newM
+	end
+
 	def dump_matrix(mat)
 		self.matrix = mat.matrix.clone
 		self.reshape(mat.getShape)
@@ -209,10 +234,10 @@ class Matrix
 		return sum.to_f
 	end
 
-	def sumAxis
+	def sumAxis(start: 0, finish: self.size_x)
 		Matrix.set(
 		      (0...self.size_y).map do |y|
-		           	[(0...self.size_x).sum do |x|
+		           	[(start...finish).sum do |x|
 		         		self[y, x]
 		           	end]
 		      end
@@ -221,11 +246,11 @@ class Matrix
 
 	def sumOrd
 		Matrix.set(
-		      (0...self.size_x).map do |x|
-		      	[(0...self.size_y).sum do |y|
+		      [(0...self.size_x).map do |x|
+		      	(0...self.size_y).sum do |y|
 		         		self[y, x]
-		           	end]
-		      end
+		           	end
+		      end]
 		)
 	end
 

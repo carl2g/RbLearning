@@ -1,37 +1,45 @@
 class NetLayer
 
-	attr_accessor :w, :b, :activFunc, :lrn, :dropOut, :lrnOptimizer, :regularizer
+	attr_accessor :w, :b, :activFunc, :lrn, :dropOut, :lrnOptimizer, :regularizer, :weigthInitFunc, :size
 
 	def initialize(
-			size_y, 
-			size_x, 
-			actFunc, 
+			size: 1,
+			activFunction: nil, 
 			lrn: 0.03, 
-			dropOut: 0.0, 
-			min: -0.001, 
-			max: 0.001, 
+			dropOut: 0.0,
+			weigthInitFunc: lambda { return Random.rand(-0.1..0.1) },
 			lrnOptimizer: LrnOptimizer::Momentum.new, 
-			regularizer: Regularizer::L2.new
+			regularizer: Regularizer::L2.new,
+			weigths: nil
 		)
 
-		@w = initWeights(size_y, size_x, min, max)
-		@b = Matrix.new(1, size_y, 1)
-		
-		@activFunc = actFunc
+		@size = size
+		@weigthInitFunc = weigthInitFunc
+		@activFunc = activFunction
 		@lrn = lrn
 		@dropOut = dropOut
 		
 		@lrnOptimizer = lrnOptimizer
-		@lrnOptimizer.setSize(size_y, size_x)
-
 		@regularizer = regularizer
 	end
 
-	def optimize(dw, dz)
+	def setWeigths(w, b)
+		self.lrnOptimizer.setSize(w.size_y, w.size_x)
+		self.w = w
+		self.b = b
+	end
+
+	def initWeigths(rowSize, colSize)
+		self.lrnOptimizer.setSize(rowSize, colSize)
+		self.w = self.initWeightsFunc(rowSize, colSize, self.weigthInitFunc)
+		self.b = self.initWeightsFunc(1, rowSize, self.weigthInitFunc)
+	end
+
+	def optimize(dw)
 		if @lrnOptimizer.beta == 0.0
-			return [dw, dz]
+			return dw
 		else
-			return @lrnOptimizer.optimize(dw, dz)
+			return @lrnOptimizer.optimize(dw)
 		end
 	end
 
@@ -43,18 +51,11 @@ class NetLayer
 		return @regularizer.regularizeBackward(dw, w)
 	end
 
-	def reset
-		@w =  initWeights(@w.size_y, @w.size_x, min, max)
-		@b =  initWeights(@b.size_y, @b.size_x, min, max)
-		return [@w, @b]
-	end
-
-	def initWeights(size_y, size_x = size_y, min = -1.0, max = 1.0)
+	def initWeightsFunc(size_y, size_x = size_y, func = weigthInitFunc)
 		w = Matrix.new(size_y, size_x)
 		(0...size_y).each do |y|
-			Random.srand
 			(0...size_x).each do |x|
-				w[y, x] = Random.rand(min..max)
+				w[y, x] = func.call()
 			end
 		end
 		return w

@@ -16,10 +16,16 @@ def triangleEquationSolver(mat, feature_size = mat.size_y)
 end
 
 def poylnomialRegression(mat, res)
-	res = mat.transpose * res
-	m = mat.transpose * mat
+	m = mat
+	# res = mat.transpose * res
+	# m = mat.transpose * mat
+
 	m = m << res
+	m.printM
 	gauss = GaussElemination(m)
+	gauss.printM(6)
+	# triangleEquationSolver(gauss).printM(10)
+	# exit
 	return triangleEquationSolver(gauss)
 end
 
@@ -64,5 +70,6 @@ def GaussElemination(mat, size_y = mat.size_y, size_x = mat.size_x)
 		end
 		y = y + 1
 	end
+
 	return newMat
 end

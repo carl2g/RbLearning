@@ -5,6 +5,7 @@ module Statistic
 	end
 
 	def quartile(datas, q)
+		datas.map!(&:to_f)
 		datas.sort[(datas.size * q) / 4]
 	end
 
@@ -58,7 +59,7 @@ module Statistic
 		(0...m.size_y).each do |i|
 			min = m[i].min
 			max = m[i].max
-			delt = (max - min) == 0 ? 1 : (max - min)
+			delt = (max - min) == 0.0 ? 1.0 : (max - min)
 			(0...m[i].size).each do |x|
 				m[i, x] = (m[i, x] - min) / delt
 			end
@@ -67,16 +68,31 @@ module Statistic
 		return axis == 1 ? m.transpose : m
 	end
 
-	def standerdized(mat)
-		mean = mean(mat.matrix)		
-		std  = std_dev(mat.matrix)
-
-		mat.matrix = mat.matrix.map do |v|
-			(v - mean) / std
+	def standerdized(mat, axis: 0)
+		m = axis == 1 ? mat.transpose : mat
+		
+		(0...m.size_y).each do |i|
+			mean = mean(m[i])		
+			std  = std_dev(m[i])
+			std = std == 0 ? 1 : std
+			(0...m[i].size).each do |x|
+				m[i, x] = (m[i, x] - mean) / std
+			end
 		end
 
-		return mat
+		return axis == 1 ? m.transpose : m
 	end
+
+	# def standerdized(mat)
+	# 	mean = mean(mat.matrix)		
+	# 	std  = std_dev(mat.matrix)
+
+	# 	mat.matrix = mat.matrix.map do |v|
+	# 		(v - mean) / std
+	# 	end
+
+	# 	return mat
+	# end
 
 	def relative_frequence(arr, val)
 		return frequence(arr, val) / arr.size.to_f

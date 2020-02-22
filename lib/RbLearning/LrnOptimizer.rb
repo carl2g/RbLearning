@@ -1,7 +1,7 @@
 module LrnOptimizer
 
 	class Momentum
-		attr_accessor :dwOpt, :dbOpt, :beta
+		attr_accessor :dwOpt, :beta
 
 		def initialize(beta: 0.0)
 			@beta = beta
@@ -11,11 +11,9 @@ module LrnOptimizer
 			@dwOpt = Matrix.new(size_y, size_x)
 		end
 
-		def optimize(dw, dz)
+		def optimize(dw)
 			@dwOpt = @dwOpt.applyOp(:*, @beta) + dw.applyOp(:*, 1.0 - @beta)
-			@dbOpt = dz
-
-			return [@dwOpt, @dbOpt]
+			return @dwOpt
 		end
 	end
 

@@ -2,25 +2,28 @@ require 'test/unit'
 require './lib/RbLearning'
 
 class GradientCheckingTest < Test::Unit::TestCase
-	EPSYLON = 0.000000001
+	EPSYLON = 0.0001
 
 	def test_1
 		train_x = Matrix.set([
-			[4, 6, 7], 
-			[6, 8, 10],
-			[2, 32, 14]
+			[0, 0], 
+			[1, 0],
+			[0, 1],
+			[1, 1]
 		])
 		train_y = Matrix.set([
-			[10], 
-			[12],
-			[32]
+			[0], 
+			[1],
+			[1],
+			[0]
 		])
-		lrn = 0.01
+		
+		lrn = 0.1
 
 		layers = [
 			Input.new(train_x.size_x),
 			NetLayer.new(
-				size: 64,
+				size: 12,
 			 	lrn: lrn,
 	 			activFunction: ActivFunc::ReLu
 			),
@@ -38,8 +41,9 @@ class GradientCheckingTest < Test::Unit::TestCase
 			original_w = l.w.copy
 			(0...l.w.size_y).each do |j|
 				(0...l.w.size_x).each do |i|
-					
+
 					l.w = original_w.copy
+
 					l.w[j, i] -= EPSYLON
 					zs, act = net.feedForward(train_x)
 					a = net.costFunc.func(act.last, train_y)
@@ -50,14 +54,14 @@ class GradientCheckingTest < Test::Unit::TestCase
 					b = net.costFunc.func(act.last, train_y)
 
 					delt = (b - a).applyOp(:*, lrn / (2.0 * EPSYLON)).sumOrd
-					updated_w = (original_w - delt).applyOp(:round, 3)
+					updated_w = (original_w - delt).applyOp(:round, 6)
 					
 					puts "==========delta w(#{j})(#{i}) ========"
 					delt.printM(5)
 
 					l.w = original_w.copy
 					layers, loss = net.internal_train(train_y, train_x)
-					l.w = l.w.applyOp(:round, 3)
+					l.w = l.w.applyOp(:round, 6)
 
 					puts "========== W(#{j})(#{i}) after training ========"
 					puts l.w[j, i]
@@ -65,7 +69,7 @@ class GradientCheckingTest < Test::Unit::TestCase
 					puts "========== Manualy calculated updated W(#{j})(#{i}) ========"
 					puts updated_w[j, i]
 					puts "=" * 80
-					res = updated_w[j, i] <= l.w[j, i] + 0.01 && updated_w[j, i] >= l.w[j, i] - 0.01
+					res = updated_w[j, i] == l.w[j, i]
 			    	assert(res, "Derivation is not the same")
 			    end
 			end

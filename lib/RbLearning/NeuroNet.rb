@@ -97,8 +97,8 @@ class NeuroNet
 		##########################################
 		#### Apply learning rate on derivates ####
 		##########################################
-		dw = dw.applyOp(:*, @layers[i].lrn / dz.size_y)
-		db = dz.sumOrd.applyOp(:*, @layers[i].lrn / dz.size_y)
+		dw = dw.applyOp(:*, @layers[i].lrn)
+		db = dz.sumOrd.applyOp(:*, @layers[i].lrn)
 
 		#################################################
 		#### Compute the learning optimizer function ####
@@ -145,8 +145,8 @@ class NeuroNet
 			##########################################
 			#### Apply learning rate on derivates ####
 			##########################################
-			dw = dw.applyOp(:*, @layers[i].lrn / dz.size_y)
-			db = dz.sumOrd.applyOp(:*, @layers[i].lrn / dz.size_y)
+			dw = dw.applyOp(:*, @layers[i].lrn)
+			db = dz.sumOrd.applyOp(:*, @layers[i].lrn)
 			
 			#################################################
 			#### Compute the learning optimizer function ####

@@ -56,7 +56,6 @@ class NeuroNet
 			#########################################################
 			act.push(x)
 		end
-		puts "=" * 20
 		return [zs, act]
 	end
 
@@ -98,13 +97,13 @@ class NeuroNet
 		##########################################
 		#### Apply learning rate on derivates ####
 		##########################################
-		dw = dw.applyOp(:*, @layers[i].lrn / dz.size_y)
-		db = dz.sumOrd.applyOp(:*, @layers[i].lrn / dz.size_y)
+		dw = dw.applyOp(:*, @layers[i].lrn)
+		db = dz.sumOrd.applyOp(:*, @layers[i].lrn)
 
 		#################################################
 		#### Compute the learning optimizer function ####
 		#################################################
-		dw = @layers[i].optimize(dw)
+		# dw = @layers[i].optimize(dw)
 
 		######################################################
 		#### Update weights with the calculated derivates ####
@@ -146,8 +145,8 @@ class NeuroNet
 			##########################################
 			#### Apply learning rate on derivates ####
 			##########################################
-			dw = dw.applyOp(:*, @layers[i].lrn / dz.size_y)
-			db = dz.sumOrd.applyOp(:*, @layers[i].lrn / dz.size_y)
+			dw = dw.applyOp(:*, @layers[i].lrn)
+			db = dz.sumOrd.applyOp(:*, @layers[i].lrn)
 			
 			#################################################
 			#### Compute the learning optimizer function ####
@@ -178,7 +177,7 @@ class NeuroNet
 		return layers
 	end
 
-	private
+	# private
 		def internal_train(y, x)
 			zs, act = feedForward(x)
 			ws, bs = backPropagation(zs, act, y)
@@ -192,15 +191,6 @@ class NeuroNet
 			loss = @layers.last.regularizer.forward(loss, @layers.last.w)
 			loss = loss.sumOrd.applyOp(:/, loss.size_y)[0, 0]**0.5
 
-			# if loss.nan?
-			# 	y.printM
-			# 	act.last.printM(5)
-			# 	loss = @costFunc.func(act.last, y)
-			# 	loss.printM
-			# 	loss = @layers.last.regularizer.forward(loss, @layers.last.w)
-			# 	loss.printM
-			# 	exit
-			# end
 			return [@layers, loss]
 		end
 

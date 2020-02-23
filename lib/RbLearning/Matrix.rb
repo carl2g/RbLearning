@@ -212,6 +212,12 @@ class Matrix
 		Matrix.setVectorizedMatrix(self.to_vect, self.size_y, self.size_x)
 	end
 
+	def round(n = 1)
+		self.matrix = self.matrix.map do |v|
+			v.round(n)
+		end
+	end
+
 	def applyOp(op, nb)
 		Matrix.setVectorizedMatrix(self.matrix.each_with_index.map do |val, i|
 			val.send(op, nb)

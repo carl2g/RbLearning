@@ -25,38 +25,38 @@ module Regularizer
 
 	# end	
 
-	# class L1
-	# 	attr_accessor :alpha
+	class L1
+		attr_accessor :alpha
 		
-	# 	def initialize(alpha: 0.0)
-	# 		@alpha = alpha
-	# 	end
+		def initialize(alpha: 0.0)
+			@alpha = alpha
+		end
 
-	# 	# def forward(w)
-	# 		# w if self.alpha == 0
-	# 		# return w + w.sumAxis.transpose.applyOp(:*, self.alpha)
-	# 	# end
+		def forward(loss, w)
+			return loss if self.alpha == 0
+			return loss + w.applyOp(:**, 2).applyOp(:**, 0.5).sumAxis.applyOp(:*, self.alpha)
+		end
 
-	# 	def backward(dw, w)
-	# 		return dw if @alpha == 0.0
+		def backward(dw, w)
+			return dw if @alpha == 0.0
 			
-	# 		abs_w = Matrix.setVectorizedMatrix(
-	# 			w.matrix.map do |w|
-	# 				if w > 0
-	# 					self.alpha
-	# 				elsif w < 0
-	# 					-self.alpha
-	# 				else
-	# 					0
-	# 				end
-	# 			end, 
-	# 			w.size_y,
-	# 			w.size_x
-	# 		)
-	# 		return dw + abs_w.sumAxis
-	# 	end
+			abs_w = Matrix.setVectorizedMatrix(
+				w.matrix.map do |w|
+					if w > 0
+						self.alpha
+					elsif w < 0
+						-self.alpha
+					else
+						0
+					end
+				end, 
+				w.size_y,
+				w.size_x
+			)
+			return dw + abs_w.sumAxis
+		end
 
-	# end
+	end
 
 	class L2
 		attr_accessor :alpha
@@ -67,12 +67,12 @@ module Regularizer
 
 		def forward(loss, w)
 			return loss if self.alpha == 0.0
-			return loss + w.applyOp(:**, 2).sumAxis(start: 0, finish: w.size_x - 1).applyOp(:*, self.alpha / 2.0)
+			return loss + w.applyOp(:**, 2).sumAxis.applyOp(:*, self.alpha / 2.0)
 		end
 
 		def backward(dw, w)
 			return dw if @alpha == 0.0
-			return dw + w.sumAxis(start: 0, finish: w.size_x - 1).applyOp(:*, @alpha)
+			return dw + w.sumAxis.applyOp(:*, @alpha)
 		end
 
 

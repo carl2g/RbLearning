@@ -51,7 +51,7 @@ module ActivFunc
 
 		def self.func(m)
 			Matrix.setVectorizedMatrix(
-			      m.matrix.map do |x|
+			    m.matrix.map do |x|
 					sigmoidUnit(x)
 				end,
 				m.size_y,
@@ -61,8 +61,8 @@ module ActivFunc
 
 		def self.derivate(m)
 			Matrix.setVectorizedMatrix(
-			      m.matrix.map do |x|
-			      	CMath.exp(-x) / (1.0 + CMath.exp(-x))**2
+			    m.matrix.map do |x|
+			      	sigmoidUnit(x) * (1.0 - sigmoidUnit(x))
 				end,
 				m.size_y,
 				m.size_x

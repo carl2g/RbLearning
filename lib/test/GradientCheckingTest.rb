@@ -36,7 +36,6 @@ class GradientCheckingTest < Test::Unit::TestCase
 
 		layers.each do |l|
 			original_w = l.w.copy
-			l.b = l.b.applyOp(:*, 0)
 			(0...l.w.size_y).each do |j|
 				(0...l.w.size_x).each do |i|
 					

@@ -3,7 +3,7 @@ GEM
   specs:
     ffi (1.10.0)
     power_assert (1.1.4)
-    rake (12.3.2)
+    rake (12.3.3)
     test-unit (3.3.2)
       power_assert
     yard (0.9.20)

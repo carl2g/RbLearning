@@ -139,27 +139,26 @@ validation_x = Statistic::standerdized(validation_x, axis: 1)
 layers = [
 	Input.new(train_x.size_x),
 	NetLayer.new(
+		size: 64,
+	 	activFunction: ActivFunc::ReLu, 
+	 	lrn: 0.000000001,
+		lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.95),
+		regularizer: Regularizer::L2.new(alpha: 0.1) 
+	),
+	NetLayer.new( 
 		size: 32,
-	 	# activFunction: ActivFunc::ReLu, 
-	 	lrn: 0.00000001,
-		# lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.95),
-		# regularizer: Regularizer::L1.new(alpha: 0.01) 
+	 	activFunction: ActivFunc::ReLu,
+	 	lrn: 0.000000001, 
+		lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.95),
+		regularizer: Regularizer::L2.new(alpha: 0.1)
 	),
 	NetLayer.new( 
 		size: 1,
-	 	# activFunction: ActivFunc::ReLu,
-	 	lrn: 0.00000001, 
-		# lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.95),
-		# regularizer: Regularizer::L1.new(alpha: 0.01)
+	 	activFunction: ActivFunc::ReLu,
+	 	lrn: 0.000000001, 
+		lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.95),
+		regularizer: Regularizer::L2.new(alpha: 0.1)
 	)
-	# ,
-	# NetLayer.new( 
-	# 	size: 1,
-	#  	activFunction: ActivFunc::ReLu,
-	#  	lrn: 0.001, 
-	# 	# lrnOptimizer: LrnOptimizer::Momentum.new(beta: 0.95),
-	# 	# regularizer: Regularizer::L1.new(alpha: 0.01)
-	# )
 ]
 
 net = NeuroNet.new(costFunction: CostFunc::MeanSqrtErr)
@@ -167,22 +166,19 @@ net.addLayers(layers)
 net.train(
 	[train_y, train_x], 
 	batch_size: 32, 
-	iteration: 24000,
-	epoch: 1
+	iteration: 100,
+	epoch: 25
 )
 
 net.layers.last.w.printM(3)
 
 pred = net.pred(validation_x)
 
-pred.matrix = pred.matrix.map {|v| Math.exp(v.to_f)}
-validation_y.matrix = validation_y.matrix.map {|v| Math.exp(v.to_f)}
-
 (0...10).each do |i|
 	puts "#{pred[i, 0].round}  == #{validation_y[i, 0].round}"
 end
 
-puts LossFunc::MeanSqrtErr::loss(pred, validation_y)
+puts CostFunc::MeanSqrtErr::loss(pred, validation_y)
 
 data_x = Statistic::standerdized(dataMTest.matrix)
 pred = net.pred(data_x)
@@ -190,6 +186,6 @@ pred = net.pred(data_x)
 CSV.open("./res.csv", "wb") do |csv|
 	csv << ['Id', 'SalePrice']
 	(0...pred.size_y).each do |i|
-		csv <<  [1461 + i, Math.exp(pred[i, 0])]
+		csv <<  [1461 + i, pred[i, 0]]
 	end
 end

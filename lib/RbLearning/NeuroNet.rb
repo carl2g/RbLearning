@@ -19,7 +19,7 @@ class NeuroNet
 	end
 
 	def addLayers(layers)
-		input_size = layers.first.input_size
+		input_size = layers.first.size_x
 		layers.shift
 		@layers = layers
 		@layers.each do |l|
@@ -31,6 +31,7 @@ class NeuroNet
 	def feedForward(x)
 		act = [x]
 		zs = []
+
 		@layers.each do |l|
 			w = l.w
 			b = l.b
@@ -71,7 +72,7 @@ class NeuroNet
 		#### Compute the derivate of the cost function and get the loss ####
 		####################################################################
 		loss = @costFunc.deriv(act[i + 1], y)
-		
+
 		############################################################################################
 		#### Compute the regularization L1 / L2, if no regularization set loss will be returned ####
 		############################################################################################
@@ -85,7 +86,7 @@ class NeuroNet
 		else
 			dz = regLoss ** @layers[i].activFunc.derivate(zs[i])
 		end
-
+		
 		#################################################
 		#### dCost * d(X * Wt) if no activation func ########################
 		#### dCost ** dActFunc * d(X * Wt) if the activation func was set ####
@@ -100,6 +101,11 @@ class NeuroNet
 		dw = dw.applyOp(:*, @layers[i].lrn)
 		db = dz.sumOrd.applyOp(:*, @layers[i].lrn)
 
+		############################################
+		#### Changing derivative for next layer ####
+		############################################
+		dz = dz * @layers[i].w
+		
 		#################################################
 		#### Compute the learning optimizer function ####
 		#################################################
@@ -113,17 +119,10 @@ class NeuroNet
 		
 		(0...@layers.size - 1).reverse_each do |i|
 			
-			#################################################
-			#### dCost * dHypothese if no activation func ########################
-			#### dCost * dActFunc * dHypothese if the activation func was set ####
-			#### d(X * Wt) / d(Wt) = X ##########################################
-			###############################
-			tmp = dz * @layers[i + 1].w
-			
 			############################################################################################
 			#### Compute the regularization L1 / L2, if no regularization set loss will be returned ####
 			############################################################################################
-			regLoss = @layers[i].regularizer.backward(tmp, @layers[i].w)
+			regLoss = @layers[i].regularizer.backward(dz, @layers[i].w)
 			
 			#####################################################
 			#### Compute the activation function or use loss ####
@@ -159,7 +158,15 @@ class NeuroNet
 			ws.push(@layers[i].w - dw)
 			bs.push(@layers[i].b - db)
 		end
-		return [ws.reverse!, bs.reverse!]
+		return [ws.reverse!, bs.reverse!, dz]
+	end
+
+	def calc_loss(x, y)
+		zs, act = feedForward(x)
+		loss = @costFunc.func(act.last, y)
+		loss = @layers.last.regularizer.forward(loss, @layers.last.w)
+		loss = loss.sumOrd.applyOp(:/, loss.size_y).sumAxis[0, 0]
+		return loss
 	end
 
 	def train(data, batch_size: 32, iteration: 42, epoch: 500)
@@ -168,7 +175,8 @@ class NeuroNet
 		(0...epoch).each do |ep|
 			batch_x, batch_y = DataManager.batch(y: data_y, x: data_x, batch_size: batch_size)
 			(0..iteration).each do |i|
-				layers, loss = internal_train(batch_y, batch_x)
+				internal_train(batch_y, batch_x)
+				loss = calc_loss(batch_x, batch_y)
 				STDERR.puts "Error: #{loss}"
 				puts "epoch: #{ep} iteration: #{i}"
 				puts "=" * 30
@@ -177,21 +185,20 @@ class NeuroNet
 		return layers
 	end
 
+	def update_weigths(zs, act, y)
+		ws, bs, dz = backPropagation(zs, act, y)
+
+		(0...@layers.size).each do |i|
+			@layers[i].w = ws[i]
+			@layers[i].b = bs[i]
+		end
+		return dz
+	end
+
 	# private
 		def internal_train(y, x)
 			zs, act = feedForward(x)
-			ws, bs = backPropagation(zs, act, y)
-			
-			(0...@layers.size).each do |i|
-				@layers[i].w = ws[i]
-				@layers[i].b = bs[i]
-			end
-			
-			loss = @costFunc.func(act.last, y)
-			loss = @layers.last.regularizer.forward(loss, @layers.last.w)
-			loss = loss.sumOrd.applyOp(:/, loss.size_y)[0, 0]**0.5
-
-			return [@layers, loss]
+			self.update_weigths(zs, act, y)
 		end
 
 end

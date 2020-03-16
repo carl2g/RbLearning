@@ -1,12 +1,12 @@
 require_relative './lib/MatrixLib'
 require "csv"
 
-class Input
+class InputLayer
 
-	attr_accessor :input_size
+	attr_accessor :size_y,:size_x
 
 	def initialize(input_size)
-		self.input_size = input_size
+		self.size_y, self.size_x = input_size
 	end
 
 end
@@ -291,12 +291,20 @@ class Matrix
 
 	def getMax(beg_y = 0, beg_x = 0, size_y = self.size_y, size_x = self.size_x)
 		max = self[beg_y, beg_x]
+		found_y = beg_y
+		found_x = beg_x
 		(beg_y...beg_y + size_y).each do |y|
+			break if y >= self.size_y
 			(beg_x...beg_x + size_x).each do |x|
-				max = max < self[y, x] ? self[y, x] : max
+				break if x >= self.size_x
+				if max < self[y, x]
+					max = self[y, x]
+					found_y = y
+					found_x = x
+				end
 			end
 		end
-		return max
+		return [max, found_y, found_x]
 	end
 
 	def self.boardcasting(matrix, size_y, size_x)

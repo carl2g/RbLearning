@@ -94,10 +94,10 @@ module ActivFunc
 
 	class SoftMax
 		def self.func(m)
-			m = Matrix.set((0...m.size_x).map do |x|
+			m = Matrix.set((0...m.size_y).map do |y|
 				sum = 0.0
-				max = m.getMax(0, x, m.size_y, 1)
-				out = (0...m.size_y).map do |y|
+				max, max_y, max_x = m.getMax(y, 0, 1, m.size_x)
+				out = (0...m.size_x).map do |x|
 
 					tmp = CMath.exp(m[y, x].abs - max)
 					sum += tmp
@@ -106,25 +106,25 @@ module ActivFunc
 				end
 				out.map { |val| val / sum }
 			end)
-			return m.transpose
+			return m
 		end
 
 		def self.derivate(m)
-			m = Matrix.set((0...m.size_x).map do |x|
+			m = Matrix.set((0...m.size_y).map do |y|
 				
-				max = m.getMax(0, x, m.size_y, 1)
-				
-				sum = (0...m.size_y).sum do |y|
+				max, max_y, max_x = m.getMax(y, 0, 1, m.size_x)
+
+				sum = (0...m.size_x).sum do |x|
 					CMath.exp(m[y, x] - max)
 				end
 
-				(0...m.size_y).map do |y|
-					diff = CMath.exp(m[y, x] - max) 
+				(0...m.size_x).map do |x|
+					diff = CMath.exp(m[y, x] - max)
 					(diff / sum) * (1.0 - (diff / sum))
 				end
 
 			end)
-			return m.transpose
+			return m
 		end
 	end
 

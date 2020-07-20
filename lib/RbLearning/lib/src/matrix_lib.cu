@@ -2,11 +2,9 @@
 #include <stdio.h>
 #include <math.h>
 #include <unistd.h>
-#include "matrix_lib.h"
 
 __global__ void cuda_dot(double *m1, double *m2, int size_y, int size_v, int size_x, double *new_m) {
-	// double tmp = m1[(blockIdx.x * size_x) + threadIdx.y] * m2[(threadIdx.y * size_v) + threadIdx.x];
-	// new_m[(blockIdx.x * size_v) + threadIdx.x] += tmp;
+ 	m2[(threadIdx.y * size_v) + threadIdx.x];
 	double tmp = 0;
 	for (int x = 0; x < size_x; ++x) {
 		tmp += m1[(blockIdx.x * size_x) + x] * m2[(x * size_v) + threadIdx.x];
@@ -15,25 +13,34 @@ __global__ void cuda_dot(double *m1, double *m2, int size_y, int size_v, int siz
 }
 
 __global__ void cuda_mult(double *m1, double *m2, double *new_m) {
-	new_m[blockIdx.x] = m1[blockIdx.x] * m2[blockIdx.x];
+	new_m[blockIdx.x * blockDim.x + threadIdx.x] = m1[blockIdx.x * blockDim.x + threadIdx.x] * m2[blockIdx.x * blockDim.x + threadIdx.x];
 }
 
 __global__ void cuda_sub(double *m1, double *m2, double *new_m) {
-	new_m[blockIdx.x] = m1[blockIdx.x] - m2[blockIdx.x];
+	new_m[blockIdx.x * blockDim.x + threadIdx.x] = m1[blockIdx.x * blockDim.x + threadIdx.x] - m2[blockIdx.x * blockDim.x + threadIdx.x];
 }
 
-
 __global__ void cuda_add(double *m1, double *m2, double *new_m) {
-	new_m[blockIdx.x] = m1[blockIdx.x] + m2[blockIdx.x];
+	new_m[blockIdx.x * blockDim.x + threadIdx.x] = m1[blockIdx.x * blockDim.x + threadIdx.x] + m2[blockIdx.x * blockDim.x + threadIdx.x];
 }
 
 extern "C" {
 
+	int find_nb_blocks(int size, int max_th) {
+		int nb_block = 1;
+
+		while (((float)size / (float)nb_block) > (float)max_th || (size % nb_block) != 0) {
+			nb_block += 1;
+		}
+
+		return (nb_block);
+	}
+
 	double *dot(double *m1, double *m2, int size_y, int size_v, int size_x) {
 		double *new_m 		= (double *)malloc((size_v * size_y) * sizeof(double));
 		double *cuda_new_m 	= NULL;
-		double *cuda_m1 		= NULL;
-		double *cuda_m2 		= NULL;
+		double *cuda_m1 	= NULL;
+		double *cuda_m2 	= NULL;
 
 		cudaDeviceSynchronize();
 		cudaError_t error = cudaGetLastError();
@@ -65,6 +72,9 @@ extern "C" {
 		double *cuda_m1 	= NULL;
 		double *cuda_m2 	= NULL;
 
+		dim3 numBlocks(find_nb_blocks(size, 1024));
+		dim3 threadsPerBlock(size / numBlocks.x);
+
 		cudaMalloc((void**)&cuda_new_m, size * sizeof(double));
 		memset(new_m, 0, size * sizeof(double));
 		cudaMalloc((void**)&cuda_m1, size * sizeof(double));
@@ -73,7 +83,7 @@ extern "C" {
 		cudaMemcpy(cuda_m1, m1, (size) * sizeof(double), cudaMemcpyHostToDevice);
 		cudaMemcpy(cuda_m2, m2, (size) * sizeof(double), cudaMemcpyHostToDevice);
 
-		cuda_mult<<<size, 1>>>(cuda_m1, cuda_m2, cuda_new_m);
+		cuda_mult<<<numBlocks, threadsPerBlock>>>(cuda_m1, cuda_m2, cuda_new_m);
 		cudaMemcpy(new_m, cuda_new_m, size * sizeof(double), cudaMemcpyDeviceToHost);
 
 		cudaFree(cuda_new_m);
@@ -95,11 +105,14 @@ extern "C" {
 		return (new_m);
 	}
 
-	double *subtract(double *m1, double *m2, int size) {
+	double *substract(double *m1, double *m2, int size) {
 		double *new_m 		= (double *)malloc((size) * sizeof(double));
 		double *cuda_new_m 	= NULL;
-		double *cuda_m1 		= NULL;
-		double *cuda_m2 		= NULL;
+		double *cuda_m1 	= NULL;
+		double *cuda_m2 	= NULL;
+
+		dim3 numBlocks(find_nb_blocks(size, 1024));
+		dim3 threadsPerBlock(size / numBlocks.x);
 
 		cudaMalloc((void**)&cuda_new_m, size * sizeof(double));
 		memset(new_m, 0, size * sizeof(double));
@@ -109,7 +122,7 @@ extern "C" {
 		cudaMemcpy(cuda_m1, m1, (size) * sizeof(double), cudaMemcpyHostToDevice);
 		cudaMemcpy(cuda_m2, m2, (size) * sizeof(double), cudaMemcpyHostToDevice);
 		
-		cuda_sub<<<size, 1>>>(cuda_m1, cuda_m2, cuda_new_m);
+		cuda_sub<<<numBlocks, threadsPerBlock>>>(cuda_m1, cuda_m2, cuda_new_m);
 		cudaMemcpy(new_m, cuda_new_m, size * sizeof(double), cudaMemcpyDeviceToHost);
 
 		cudaFree(cuda_new_m);
@@ -121,8 +134,11 @@ extern "C" {
 	double *add(double *m1, double *m2, int size) {
 		double *new_m 		= (double *)malloc((size) * sizeof(double));
 		double *cuda_new_m 	= NULL;
-		double *cuda_m1 		= NULL;
-		double *cuda_m2 		= NULL;
+		double *cuda_m1 	= NULL;
+		double *cuda_m2 	= NULL;
+
+    	dim3 numBlocks(find_nb_blocks(size, 1024));
+		dim3 threadsPerBlock(size / numBlocks.x);
 
 		cudaMalloc((void**)&cuda_new_m, size * sizeof(double));
 		memset(new_m, 0, size * sizeof(double));
@@ -132,7 +148,7 @@ extern "C" {
 		cudaMemcpy(cuda_m1, m1, (size) * sizeof(double), cudaMemcpyHostToDevice);
 		cudaMemcpy(cuda_m2, m2, (size) * sizeof(double), cudaMemcpyHostToDevice);
 
-		cuda_add<<<size, 1>>>(cuda_m1, cuda_m2, cuda_new_m);
+		cuda_add<<<numBlocks, threadsPerBlock>>>(cuda_m1, cuda_m2, cuda_new_m);
 		cudaMemcpy(new_m, cuda_new_m, size * sizeof(double), cudaMemcpyDeviceToHost);
 
 		cudaFree(cuda_new_m);

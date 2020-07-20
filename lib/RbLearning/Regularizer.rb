@@ -67,12 +67,12 @@ module Regularizer
 
 		def forward(loss, w)
 			return loss if self.alpha == 0.0
-			return loss + w.applyOp(:**, 2).sumAxis.applyOp(:*, self.alpha / 2.0)
+			return loss + w.applyOp(:**, 2).applyOp(:*, self.alpha).sumAxis
 		end
 
 		def backward(dw, w)
 			return dw if @alpha == 0.0
-			return dw + w.sumAxis.applyOp(:*, @alpha)
+			return dw + w.applyOp(:*, 2 * self.alpha).sumAxis
 		end
 
 

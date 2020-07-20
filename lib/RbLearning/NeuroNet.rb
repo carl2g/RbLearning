@@ -24,7 +24,8 @@ class NeuroNet
 		@layers = layers
 		@layers.each do |l|
 			l.initWeigths(l.size, input_size)
-			input_size = l.size
+			input_size = l.w.size_y
+			l.w.printShape
 		end
 	end
 
@@ -163,24 +164,27 @@ class NeuroNet
 
 	def calc_loss(x, y)
 		zs, act = feedForward(x)
-		loss = @costFunc.func(act.last, y)
-		loss = @layers.last.regularizer.forward(loss, @layers.last.w)
-		loss = loss.sumOrd.applyOp(:/, loss.size_y).sumAxis[0, 0]
+		# y.printM
+		# puts "==" * 20
+		# act.last.printM(3)
+		loss = @costFunc.loss(act.last, y)
+		# loss = @layers.last.regularizer.forward(loss, @layers.last.w)
+		# loss = loss.sumOrd.applyOp(:/, loss.size_y).sumAxis[0, 0]
 		return loss
 	end
 
-	def train(data, batch_size: 32, iteration: 42, epoch: 500)
-		data_y, data_x = data
+	def train(data, batch_size: 32, epoch: 500)
+		data_x, data_y = data
+		iteration = data_y.size_y / batch_size
 
 		(0...epoch).each do |ep|
-			batch_x, batch_y = DataManager.batch(y: data_y, x: data_x, batch_size: batch_size)
 			(0..iteration).each do |i|
-				internal_train(batch_y, batch_x)
-				loss = calc_loss(batch_x, batch_y)
-				STDERR.puts "Error: #{loss}"
-				puts "epoch: #{ep} iteration: #{i}"
-				puts "=" * 30
+				batch_x, batch_y = DataManager.batch(y: data_y, x: data_x, batch_size: batch_size)
+				internal_train(batch_x, batch_y)
 			end
+			loss = calc_loss(data_x, data_y)
+			STDERR.puts "epoch: #{ep} error: #{loss}"
+			puts "=" * 30
 		end
 		return layers
 	end
@@ -196,7 +200,7 @@ class NeuroNet
 	end
 
 	# private
-		def internal_train(y, x)
+		def internal_train(x, y)
 			zs, act = feedForward(x)
 			self.update_weigths(zs, act, y)
 		end

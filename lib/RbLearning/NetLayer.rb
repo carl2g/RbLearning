@@ -7,7 +7,7 @@ class NetLayer
 			activFunction: nil, 
 			lrn: 0.03, 
 			dropOut: 0.0,
-			weigthInitFunc: lambda { return Random.rand(0..0.1) },
+			weigthInitFunc: lambda { return Random.rand(0..0.01) },
 			lrnOptimizer: LrnOptimizer::Momentum.new, 
 			regularizer: Regularizer::L2.new,
 			weigths: nil

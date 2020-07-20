@@ -5,7 +5,7 @@ module MatrixLib
 	ffi_lib '/usr/lib/RbLearning/c_lib.so'
 	attach_function :dot ,[:pointer, :pointer, :int, :int, :int], :pointer
 	attach_function :mult ,[:pointer, :pointer, :int], :pointer
-	attach_function :subtract ,[:pointer, :pointer, :int], :pointer
+	attach_function :substract ,[:pointer, :pointer, :int], :pointer
 	attach_function :add ,[:pointer, :pointer, :int], :pointer
 	attach_function :transpose ,[:pointer, :int, :int], :pointer
 end

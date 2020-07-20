@@ -1,6 +1,7 @@
 require_relative './ActivFunc'
 require_relative './LossFunc'
 require_relative './NeuroNet'
+require 'benchmark'
 
 class Cnn
 
@@ -24,8 +25,9 @@ class Cnn
 	end
 
 	def forward_step(train_x, train_y)
-		f_in, f_out = self.forwardProp(train_x)
-			
+		# puts "forwardProp:" 
+		# puts Benchmark.measure {self.forwardProp(train_x)}
+		f_in, f_out = self.forwardProp(train_x)		
 		x = self.transform_to_mat(f_out.last)
 		loss = self.ann.calc_loss(x, train_y)
 		STDERR.puts "Error: #{loss}"
@@ -36,6 +38,8 @@ class Cnn
 	def backward_step(train_x, train_y, f_in, f_out, zs, act)
 		dz = self.ann.update_weigths(zs, act, train_y)
 		dz = self.reverse_transform_to_mat(dz, f_out.last, f_out.last.last.last.size_y, f_out.last.last.last.size_x)
+		# puts "backProp:" 
+		# puts Benchmark.measure {self.backProp(dz, f_in, f_out)}
 		self.backProp(dz, f_in, f_out)
 	end
 
@@ -44,11 +48,28 @@ class Cnn
 		backward_step(train_x, train_y, f_in, f_out, zs, act)
 	end
 
-	def train(data)
+	def train(data, batch_size: 32, iteration: 42, epoch: 500)
 		train_x, train_y = data
-		(0..20000).each do 
-			self.one_iteration_train(train_x, train_y)
+		(0...epoch).each do |ep|
+			puts "epoch: #{ep}"
+			batch_x, batch_y = Cnn.batch(y: train_y, x: train_x, batch_size: batch_size)
+			(0..iteration).each do |i|
+				self.one_iteration_train(batch_x, batch_y)
+			end
 		end
+	end
+
+	def self.batch(y: [], x: [], batch_size: 24)
+		Random.srand
+		indexes = (0...batch_size).map { Random.rand(0...y.size_y) }
+		batch_x = indexes.map do |i|
+			x[i]
+		end
+		batch_y = Matrix.set(indexes.map do |i|
+			y[i]
+		end)
+
+		return [batch_x, batch_y]
 	end
 
 	def backProp(dx, f_in, f_out)
@@ -65,7 +86,6 @@ class Cnn
 					l.updateFilters(dw)
 					dx[v] = l.convdx(dx[v], inputs[0].size_y, inputs[0].size_x)
 				end
-
 			end
 		end
 	end
@@ -175,7 +195,7 @@ class ConvLayer
 
 	attr_accessor :filters, :step_y, :step_x, :f_size_y, :f_size_x, :lrn
 
-	def initialize(filter_nb: 1, size: [4, 4], step_y: 1, step_x: 1, lrn: 0.1, initFunc: lambda { return Random.rand(0...0.2) } )
+	def initialize(filter_nb: 1, size: [4, 4], step_y: 1, step_x: 1, lrn: 0.1, initFunc: lambda { return Random.rand(-0.1...0.1) } )
 		self.filters = []
 		self.step_y = step_y
 		self.step_x = step_x
@@ -191,8 +211,11 @@ class ConvLayer
 			(0...inp.size_y).step(self.step_y) do |y|
 				(0...inp.size_x).step(self.step_x) do |x|
 					f = self.filters[i % self.filters.size]
-					t = inp.getMat(y, x, f.size_y, f.size_x).applyOp(:*, self.lrn)
-					self.filters[i % self.filters.size] -= t
+					(0...f.size_y).each do |f_y|
+						(0...f.size_x).each do |f_x|
+							f[f_y, f_x] -= inp[y + f_y, x + f_x] * self.lrn if inp[y + f_y, x + f_x]
+						end
+					end
 				end
 			end
 		end
@@ -205,7 +228,7 @@ class ConvLayer
 			if res[i / self.filters.size].nil?
 				res[i / self.filters.size] = applydx(d, f, size_y, size_x)
 			else
-				res[i / self.filters.size] += applydx(d, f, size_y, size_x)
+				res[i / self.filters.size] << applydx(d, f, size_y, size_x)
 			end
 		end
 		return res
@@ -262,7 +285,7 @@ class ConvLayer
 		size_y = ((inp.size_y / step_y.to_f) - ((filter.size_y - step_y) / step_y.to_f)).floor
 		size_x = ((inp.size_x / step_x.to_f) - ((filter.size_x - step_x) / step_x.to_f)).floor
 		conv = Matrix.new(size_y, size_x)
-
+		
 		(0...conv.size_y).each do |y|
 			(0...conv.size_x).each do |x|
 				conv[y, x] = applyFilter(inp, filter, y * step_y, x * step_x)

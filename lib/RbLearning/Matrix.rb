@@ -72,7 +72,11 @@ class Matrix
 	def printM(round = 1)
 		(0...@size_y).each do |y|
 			(0...@size_x).each do |x|
-				print "%.#{round}f  " % self[y, x]
+				if x == @size_x - 1
+					print "%.#{round}f" % self[y, x]
+				else
+					print "%.#{round}f, " % self[y, x]
+				end
 			end
 			puts
 		end
@@ -150,7 +154,7 @@ class Matrix
 		vec2 = m.to_vect
 		ptr2 = FFI::MemoryPointer.new(:double, vec2.size)
 		ptr2.write_array_of_double(vec2)
-		res = MatrixLib.subtract(ptr1, ptr2, self.size_y * self.size_x)
+		res = MatrixLib.substract(ptr1, ptr2, self.size_y * self.size_x)
 		vect = res.read_array_of_double(self.size_y * self.size_x)
 		m = Matrix.setVectorizedMatrix(vect, self.size_y, self.size_x)
 		LibC.free(res)
@@ -283,7 +287,7 @@ class Matrix
 		newM = Matrix.new(size_y, size_x)
 		(0...size_y).each do |y|
 			(0...size_x).each do |x|
-				newM[y, x] = self[beg_y + y, beg_x + x] if self[beg_y + y] && self[beg_y + y, beg_x + x]
+				newM[y, x] = self[beg_y + y, beg_x + x] if self[beg_y + y, beg_x + x]
 			end
 		end
 		return newM

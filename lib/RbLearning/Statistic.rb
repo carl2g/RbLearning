@@ -53,31 +53,38 @@ module Statistic
 		Math.sqrt(variance(arr))
 	end
 
-	def normalize_range(mat, axis: 0)
+	def normalize_range(arr)
+		min = arr.min
+		max = arr.max
+		delt = max - min
+		(0...arr.size).each do |i|
+			arr[i] = (arr[i] - min) / delt
+		end
+		return (arr)
+	end
+
+	def mat_normalize_range(mat, axis: 0)
 		m = axis == 1 ? mat.transpose : mat
 		
 		(0...m.size_y).each do |i|
-			min = m[i].min
-			max = m[i].max
-			delt = (max - min) == 0.0 ? 1.0 : (max - min)
-			(0...m[i].size).each do |x|
-				m[i, x] = (m[i, x] - min) / delt
-			end
+			m.setLine(i, normalize_range(m[i]))
 		end
 
 		return axis == 1 ? m.transpose : m
 	end
 
-	def standerdized(mat, axis: 0)
+	def standerdize(arr, mean: mean(arr), std_dev: std_dev(arr) )
+		(0...arr.size).each do |i|
+			arr[i] = (arr[i] - mean) / std_dev
+		end
+		return arr
+	end
+
+	def mat_standerdize(mat, axis: 0)
 		m = axis == 1 ? mat.transpose : mat
 		
 		(0...m.size_y).each do |i|
-			mean = mean(m[i])		
-			std  = std_dev(m[i])
-			std = std == 0 ? 1 : std
-			(0...m[i].size).each do |x|
-				m[i, x] = (m[i, x] - mean) / std
-			end
+			m.setLine(i, standerdize(m[i]))
 		end
 
 		return axis == 1 ? m.transpose : m

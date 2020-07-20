@@ -31,6 +31,13 @@ class DataManager
 		@size_y = @data.first.last.size
 	end
 
+	def standerdize
+		self.labels.each do |l|
+			self[l].map!(&:to_i)
+			self[l] = Statistic::standerdize(self[l])
+		end
+	end
+
 	# Generate a Matrix Object using DataManager Labels
 	#
 	# == Parameters:
@@ -225,6 +232,23 @@ class DataManager
 			val.each_with_index.each do |v, i|
 				self[key][i] = new_val if v == val_to_replace
 			end
+		end
+	end
+
+	def printData
+		self.labels.each do |l|
+			if self.labels.last == l
+				print "#{l}"
+			else
+				print "#{l}, "
+			end
+		end
+		puts
+		(0...self.size_y).each do |r|
+			self.getAt(r).each do |v|
+				print "#{v}, "
+			end
+			puts
 		end
 	end
 

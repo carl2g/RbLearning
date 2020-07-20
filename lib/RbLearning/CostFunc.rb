@@ -8,7 +8,7 @@ module CostFunc
 					(pred[y, x] - res[y, x])**2
 				end
 			end
-			return (err / (1.0 / 2.0 * pred.size_y))**0.5
+			return (((1.0/2.0) * err) / pred.size_y)**0.5
 		end
 
 		# def self.log_loss(pred, res)
